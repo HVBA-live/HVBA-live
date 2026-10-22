@@ -5,4 +5,16 @@
 @theme {
   --color-hvba-dark: #1e293b;
   --color-hvba-blue: #1d4ed8;
+  --color-primary: #0065a4;
+  --color-primary-glow: #008ee6;
+  --color-secondary: #19274a;
+  --color-background: #ffffff;
+  --color-foreground: #19274a;
+  --color-muted: #f1f5f9;
+  --color-muted-foreground: #64748b;
+  --color-border: #e2e8f0;
+  --color-destructive: #ef4444;
+
+  --shadow-judicial: 0 10px 30px -10px rgb(0 101 164 / 0.3);
+  --shadow-card: 0 4px 20px -4px rgb(0 101 164 / 0.1);
 }

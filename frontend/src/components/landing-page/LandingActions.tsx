@@ -1,18 +1,23 @@
 import { Link } from "react-router";
+import { LogIn, UserPlus, ArrowRight } from "lucide-react";
 
 const LandingActions = () => {
   return (
     <div className="space-y-3 pt-4">
       <Link
         to="/login"
-        className="flex w-full items-center justify-center gap-2 rounded-md bg-linear-to-r from-[#0369a1] to-[#0891e6] py-3 px-4 font-bold text-white shadow-md hover:opacity-90 transition duration-200"
+        className="flex w-full h-11 items-center justify-center gap-2 rounded-md px-8 text-sm font-medium text-white bg-linear-to-r from-primary to-primary-glow hover:shadow-judicial transition-all duration-300"
       >
+        <LogIn size={16} />
         Inloggen
+        <ArrowRight size={16} />
       </Link>
+
       <Link
         to="/register"
-        className="block w-full text-center border border-hvba-blue text-hvba-blue hover:bg-blue-50 font-bold py-2.5 px-4 rounded-md transition duration-200"
+        className="flex w-full h-11 items-center justify-center gap-2 rounded-md px-8 text-sm font-medium border border-border bg-background text-foreground hover:bg-primary-glow hover:text-white transition-all duration-300"
       >
+        <UserPlus size={16} />
         Account Aanmaken
       </Link>
     </div>
