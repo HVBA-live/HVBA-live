@@ -2,7 +2,7 @@ interface ConfirmOrNot{
     confirm:boolean
 }
 
-const RegisterFormPassword = ({confirm=false}:ConfirmOrNot) =>{
+const RegisterFormPassword = ({confirm= false}:ConfirmOrNot) =>{
     return(
         <div>
             <label className="block text-xs sm:text-sm font-semibold text-[#003d66] mb-0.5">

@@ -6,6 +6,7 @@ import LawyerPortal from "../pages/lawyer&burgerPortal";
 import JudgePortal from "../pages/judgePortal";
 import LandingPage from "../pages/landing-page";
 import PasswordForgotten from "../pages/passwordForgotten";
+import PasswordReset from "../pages/passwordReset";
 
 const Root = () => {
   return (
@@ -41,6 +42,10 @@ const router = createBrowserRouter([
             {
                 path:"password-forgotten",
                 element:<PasswordForgotten/>
+            },
+            {
+                path:"password-reset",
+                element:<PasswordReset/>
             }
         ]
     }

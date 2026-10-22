@@ -3,7 +3,7 @@ import PasswordForgottenFormSubmit from "./passwordForgottenFormSubmit";
 
 const PasswordForgottenForm = () => {
     return (
-        <form action="#" method = "POST" className="space-y-6">
+        <form action="#" method ="POST" onSubmit={(e) => e.preventDefault()} className="space-y-6">
             {/*Emailform*/}
             <PasswordForgottenFormEmail/>
             {/*submit buttonform*/}
