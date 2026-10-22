@@ -1,6 +1,6 @@
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 
-const LandingLayout = ({ children }: { children: React.ReactNode }) => {
+const LandingLayout = ({ children }: { children: ReactNode }) => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-secondary via-primary/5 to-background">
       <div className="flex flex-col items-center justify-center min-h-screen p-4 text-center">
