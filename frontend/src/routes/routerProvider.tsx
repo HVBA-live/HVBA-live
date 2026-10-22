@@ -1,11 +1,11 @@
 import { createBrowserRouter, Outlet } from "react-router";
 import Login from "../pages/login";
 import Register from "../pages/register";
-import Lawyer from "../pages/lawyer&burgerPortal";
 import LawyerPortal from "../pages/lawyer&burgerPortal";
 import JudgePortal from "../pages/judgePortal";
 import LandingPage from "../pages/landing-page";
 import Profile from "../pages/profile";
+import AppLayout from "../components/layout/AppLayout";
 
 const Root = () => {
   return (
@@ -33,16 +33,21 @@ const router = createBrowserRouter([
         element: <Register />,
       },
       {
-        path: "lawyer",
-        element: <LawyerPortal />,
-      },
-      {
-        path: "judge",
-        element: <JudgePortal />,
-      },
-      {
-        path: "profile",
-        element: <Profile />,
+        element: <AppLayout />,
+        children: [
+          {
+            path: "lawyer",
+            element: <LawyerPortal />,
+          },
+          {
+            path: "judge",
+            element: <JudgePortal />,
+          },
+          {
+            path: "profile",
+            element: <Profile />,
+          },
+        ],
       },
     ],
   },
