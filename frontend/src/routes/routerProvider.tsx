@@ -6,6 +6,8 @@ import JudgePortal from "../pages/judgePortal";
 import LandingPage from "../pages/landing-page";
 import Profile from "../pages/profile";
 import AppLayout from "../components/layout/AppLayout";
+import PasswordForgotten from "../pages/passwordForgotten";
+import PasswordReset from "../pages/passwordReset";
 
 const Root = () => {
   return (
@@ -47,6 +49,14 @@ const router = createBrowserRouter([
             path: "profile",
             element: <Profile />,
           },
+          {
+            path:"password-forgotten",
+            element:<PasswordForgotten/>
+          },
+          {
+            path:"password-reset",
+            element:<PasswordReset/>
+          }
         ],
       },
     ],
