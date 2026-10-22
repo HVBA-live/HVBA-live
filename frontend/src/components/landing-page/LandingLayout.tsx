@@ -2,8 +2,10 @@ import type { ReactNode } from "react";
 
 const LandingLayout = ({ children }: { children: ReactNode }) => {
   return (
-    <div className="bg-linear-to-br from-[#1b365d] via-[#a3b8cc] via-35% to-[#f8fafc] to-65% min-h-screen flex items-center justify-center p-4 font-sans">
-      <div className="w-full max-w-md text-center space-y-8">{children}</div>
+    <div className="min-h-screen bg-linear-to-br from-secondary via-primary/5 to-background">
+      <div className="flex flex-col items-center justify-center min-h-screen p-4 text-center">
+        <div className="w-full max-w-md mx-auto space-y-8">{children}</div>
+      </div>
     </div>
   );
 };
