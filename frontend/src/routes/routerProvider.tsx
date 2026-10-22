@@ -35,6 +35,14 @@ const router = createBrowserRouter([
         element: <Register />,
       },
       {
+        path:"password-forgotten",
+        element:<PasswordForgotten/>
+      },
+      {
+            path:"password-reset",
+            element:<PasswordReset/>
+      },
+      {
         element: <AppLayout />,
         children: [
           {
@@ -49,14 +57,6 @@ const router = createBrowserRouter([
             path: "profile",
             element: <Profile />,
           },
-          {
-            path:"password-forgotten",
-            element:<PasswordForgotten/>
-          },
-          {
-            path:"password-reset",
-            element:<PasswordReset/>
-          }
         ],
       },
     ],
