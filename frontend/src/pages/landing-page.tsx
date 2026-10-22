@@ -6,7 +6,7 @@ const LandingPage = () => {
   return (
     <LandingLayout>
       <LandingHero
-        title="HVBA Live"
+        title="Welkom"
         subtitle="Zittingsagenda hof van beroep Antwerpen"
       />
       <LandingActions />
