@@ -1,7 +1,7 @@
 const LoginFooter = () =>{
     return (
         <footer className="mt-8 text-center flex flex-col space-y-8">
-            <a href="#" className="text-sm font-bold text-hvba-blue hover:underline">
+            <a href="password-forgotten" className="text-sm font-bold text-hvba-blue hover:underline">
                 Wachtwoord vergeten?
             </a>
             
