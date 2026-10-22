@@ -1,21 +1,21 @@
 {
-  "name": "React, .NET & Postgres",
-  "dockerComposeFile": "../docker-compose.yml",
-  "service": "app",
-  "workspaceFolder": "/workspace",
+  "name": "React, .NET",
+  "image":"mcr.microsoft.com/devcontainers/dotnet:8.0",
   "features": {
     "ghcr.io/devcontainers/features/node:1": {
-      "version": "20",
+      "version": "lts",
       "nodeGypDependencies": true
     }
   },
-  "forwardPorts": [5173, 5000, 5432],
+  "forwardPorts": [5173, 5000, 5001],
+  "postCreateCommand": "npm config set update-notifier false && npm config set fund false",
   "customizations": {
     "vscode": {
       "extensions": [
         "ms-dotnettools.csharp",
         "dbaeumer.vscode-eslint",
-        "esbenp.prettier-vscode"
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss"
       ]
     }
   }
