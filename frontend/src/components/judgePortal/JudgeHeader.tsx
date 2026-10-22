@@ -1,6 +1,7 @@
 import logo from "../../assets/HVBALogo.png";
 const JudgeHeader = () =>{
-    const date = Date();
+    const date = new Date();
+    const currentDate = date.toLocaleDateString("nl-BE")
     return(
         <div className="w-full mb-6 p-3" >
          <div className="flex items-center pb-3 border-b border-gray-200">
@@ -15,7 +16,7 @@ const JudgeHeader = () =>{
         </div>
         <div>
         </div>
-          <h2 className="flex justify-center items-center text-xl font-bold text-[#003d66]">{date}</h2>
+          <h2 className="flex justify-center items-center text-xl font-bold text-[#003d66]">{currentDate}</h2>
         </div>
     )
 }
