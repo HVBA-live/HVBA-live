@@ -1,6 +1,8 @@
 @import "tailwindcss";
+@source "./components";
+@source "./pages";
 
 @theme {
-  --color-hvba-dark: #1e293b; 
+  --color-hvba-dark: #1e293b;
   --color-hvba-blue: #1d4ed8;
 }
