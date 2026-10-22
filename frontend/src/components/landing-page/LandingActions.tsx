@@ -2,10 +2,10 @@ import { Link } from "react-router";
 
 const LandingActions = () => {
   return (
-    <div className="space-y-6 pt-2">
+    <div className="space-y-3 pt-4">
       <Link
         to="/login"
-        className="block w-full text-center bg-hvba-blue hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded-md transition duration-200"
+        className="flex w-full items-center justify-center gap-2 rounded-md bg-linear-to-r from-[#0369a1] to-[#0891e6] py-3 px-4 font-bold text-white shadow-md hover:opacity-90 transition duration-200"
       >
         Inloggen
       </Link>
