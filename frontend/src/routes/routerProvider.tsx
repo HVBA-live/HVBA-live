@@ -8,6 +8,7 @@ import Profile from "../pages/profile";
 import AppLayout from "../components/layout/AppLayout";
 import PasswordForgotten from "../pages/passwordForgotten";
 import PasswordReset from "../pages/passwordReset";
+import AdminPortal from "../pages/adminPortal";
 
 const Root = () => {
   return (
@@ -56,6 +57,10 @@ const router = createBrowserRouter([
           {
             path: "profile",
             element: <Profile />,
+          },
+          {
+            path: "admin",
+            element: <AdminPortal />,
           },
         ],
       },
