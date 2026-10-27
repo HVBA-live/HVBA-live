@@ -1,4 +1,4 @@
-import type { User } from "./types";
+import type { User, Agent} from "./types";
 
 // Tijdelijke testdata tot de backend er is
 export const testUser: User = {
@@ -11,3 +11,15 @@ export const testUser: User = {
   isActive: true,
   createdAt: "2026-01-01",
 };
+
+export const AgentUser: Agent = {
+  id: "Agent1",
+  username: "Agent 1",
+  email: "Agent@Agent.be",
+  role: "politie",
+  notificationPreference: "whatsapp",
+  isAcrive: true,
+  createdAt: "2026-01-01"
+};
+
+
