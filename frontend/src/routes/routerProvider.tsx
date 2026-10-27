@@ -9,6 +9,7 @@ import AppLayout from "../components/layout/AppLayout";
 import PasswordForgotten from "../pages/passwordForgotten";
 import PasswordReset from "../pages/passwordReset";
 import AdminPortal from "../pages/adminPortal";
+import PolicePortal from "../pages/policePortal";
 
 const Root = () => {
   return (
@@ -61,6 +62,10 @@ const router = createBrowserRouter([
           {
             path: "admin",
             element: <AdminPortal />,
+          },
+          {
+            path: "police",
+            element: <PolicePortal/>
           },
         ],
       },
