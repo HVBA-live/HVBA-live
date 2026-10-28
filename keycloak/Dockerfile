@@ -1,5 +1,7 @@
 FROM quay.io/keycloak/keycloak:26.8.1
 
+ENV KC_DB=postgres
+
 # HVBA-thema in het image
 COPY themes/hvba /opt/keycloak/themes/hvba
 
