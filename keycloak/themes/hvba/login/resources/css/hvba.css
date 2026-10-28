@@ -1,0 +1,234 @@
+/* ===== Kleuren (dezelfde als in de frontend) ===== */
+:root,
+body,
+.pf-v5-c-login {
+  --hvba-blue: #1d4ed8;
+  --hvba-blue-hover: #1e40af;
+  --hvba-dark: #1e293b;
+
+  --pf-v5-global--primary-color--100: var(--hvba-blue);
+  --pf-v5-global--primary-color--200: var(--hvba-blue-hover);
+  --pf-v5-global--link--Color: var(--hvba-blue);
+  --pf-v5-global--link--Color--hover: var(--hvba-blue-hover);
+}
+
+/* ===== Achtergrond: gradient zoals login.tsx ===== */
+.login-pf body,
+#keycloak-bg {
+  background: linear-gradient(to bottom right, #1d4ed8, #a3b8cc, #ffffff) fixed !important;
+  min-height: 100vh;
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+}
+
+.pf-v5-c-login {
+  background: transparent !important;
+}
+
+/* ===== De witte kaart (logo + formulier samen) ===== */
+.pf-v5-c-login__container {
+  display: block !important;
+  width: 100%;
+  max-width: 28rem;
+  margin: 0 auto;
+  padding: 32px;
+  background: #ffffff;
+  border: 1px solid #f3f4f6;
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+}
+
+.pf-v5-c-login__main {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+}
+
+.pf-v5-c-login__main-header,
+.pf-v5-c-login__main-body,
+.pf-v5-c-login__main-footer {
+  padding: 0 !important;
+}
+
+/* ===== Kop: logo, "HVBA Live", lijn (zoals loginHeader.tsx) ===== */
+.pf-v5-c-login__header {
+  margin: 0 0 24px !important;
+  padding: 0 0 16px !important;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: center;
+}
+
+#kc-header-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+  color: var(--hvba-dark) !important;
+  font-size: 24px;
+  font-weight: 400;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+#kc-header-wrapper::before {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 80px;
+  margin-bottom: 8px;
+  background: url("../img/HVBALogo.png") center / contain no-repeat;
+}
+
+/* ===== Paginatitel ("Inloggen", "Account aanmaken") ===== */
+.pf-v5-c-login__main-header {
+  display: block !important;
+  margin-bottom: 24px !important;
+  text-align: center;
+  border-top: 0 !important;
+}
+
+#kc-page-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--hvba-dark);
+  text-align: center;
+}
+
+/* ===== Labels ===== */
+.pf-v5-c-form__label,
+.pf-v5-c-form__label-text {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--hvba-dark);
+}
+
+/* ===== Invoervelden ===== */
+.pf-v5-c-form-control {
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.pf-v5-c-form-control::before,
+.pf-v5-c-form-control::after {
+  border: none !important;
+}
+
+.pf-v5-c-form-control > input,
+.pf-v5-c-form-control > select,
+.pf-v5-c-form-control > textarea {
+  padding: 8px 16px;
+  color: #374151;
+}
+
+.pf-v5-c-form-control input::placeholder {
+  color: #9ca3af;
+}
+
+.pf-v5-c-form-control:focus-within {
+  border-color: transparent;
+  box-shadow: 0 0 0 2px var(--hvba-blue);
+}
+
+/* Wachtwoordveld met het oogje: één rand rond het geheel */
+.pf-v5-c-input-group {
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.pf-v5-c-input-group .pf-v5-c-form-control {
+  border: 0;
+  border-radius: 0;
+}
+
+.pf-v5-c-input-group .pf-v5-c-form-control:focus-within {
+  box-shadow: none;
+}
+
+.pf-v5-c-input-group:focus-within {
+  border-color: transparent;
+  box-shadow: 0 0 0 2px var(--hvba-blue);
+}
+
+.pf-v5-c-button.pf-m-control {
+  background: transparent !important;
+  color: #6b7280;
+}
+
+.pf-v5-c-button.pf-m-control::after {
+  border: none !important;
+}
+
+.pf-v5-c-button.pf-m-control:hover {
+  color: #374151;
+}
+
+/* ===== Hoofdknop (zoals loginFormSubmit.tsx) ===== */
+.pf-v5-c-button.pf-m-primary {
+  width: 100%;
+  padding: 10px 16px;
+  background: var(--hvba-blue) !important;
+  color: #ffffff !important;
+  font-weight: 700;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.pf-v5-c-button.pf-m-primary:hover,
+.pf-v5-c-button.pf-m-primary:focus {
+  background: var(--hvba-blue-hover) !important;
+}
+
+/* ===== Links (wachtwoord vergeten, registreren, terug) ===== */
+.pf-v5-c-login a {
+  color: var(--hvba-blue);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.pf-v5-c-login a:hover {
+  text-decoration: underline;
+}
+
+/* ===== Onderkant: "Heeft u nog geen account? Hier registreren" ===== */
+.pf-v5-c-login__main-footer-band {
+  margin-top: 32px;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  text-align: center;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* ===== Foutmeldingen ===== */
+.pf-v5-c-alert {
+  border-radius: 6px;
+  margin-bottom: 16px;
+}
+
+/* ===== Mobiel: kaart over de volle breedte (zoals sm: in Tailwind) ===== */
+@media (max-width: 640px) {
+  .pf-v5-c-login {
+    padding: 0;
+  }
+
+  .pf-v5-c-login__container {
+    min-height: 100vh;
+    padding: 20px;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
