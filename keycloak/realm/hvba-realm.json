@@ -60,12 +60,30 @@
         "attributes": {}
       },
       {
+        "id": "cdb8b819-192a-4075-a546-ef7fb1cdcee6",
+        "name": "politie",
+        "description": "",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "79c55818-7a92-4ed2-8200-8942d6463962",
+        "attributes": {}
+      },
+      {
+        "id": "33c3be0c-74cf-418c-8448-ccb25eb24240",
+        "name": "justitie",
+        "description": "",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "79c55818-7a92-4ed2-8200-8942d6463962",
+        "attributes": {}
+      },
+      {
         "id": "a7ba2cc0-9997-485a-a9ab-ece830230b56",
         "name": "default-roles-hvba",
         "description": "${role_default-roles}",
         "composite": true,
         "composites": {
-          "realm": ["offline_access", "uma_authorization"],
+          "realm": ["offline_access", "gebruiker", "uma_authorization"],
           "client": {
             "account": ["manage-account", "view-profile"]
           }
@@ -78,6 +96,24 @@
         "id": "5cd409e0-8504-4ffd-86b5-af2f96b82d28",
         "name": "uma_authorization",
         "description": "${role_uma_authorization}",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "79c55818-7a92-4ed2-8200-8942d6463962",
+        "attributes": {}
+      },
+      {
+        "id": "ea350e53-d0d8-47ef-914b-2143f342657f",
+        "name": "admin",
+        "description": "",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "79c55818-7a92-4ed2-8200-8942d6463962",
+        "attributes": {}
+      },
+      {
+        "id": "7f60d0eb-d94f-4914-8f82-b319ef4a178e",
+        "name": "gebruiker",
+        "description": "",
         "composite": false,
         "clientRole": false,
         "containerId": "79c55818-7a92-4ed2-8200-8942d6463962",
@@ -327,6 +363,7 @@
           "attributes": {}
         }
       ],
+      "hvba-frontend": [],
       "security-admin-console": [],
       "admin-cli": [],
       "account-console": [],
@@ -659,6 +696,75 @@
       "authenticationFlowBindingOverrides": {},
       "fullScopeAllowed": false,
       "nodeReRegistrationTimeout": 0,
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "roles",
+        "profile",
+        "basic",
+        "email"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "organization",
+        "offline_access",
+        "microprofile-jwt"
+      ]
+    },
+    {
+      "id": "6b45ac2b-0f0e-4ae9-b4e2-a562852753cd",
+      "clientId": "hvba-frontend",
+      "name": "",
+      "description": "",
+      "rootUrl": "",
+      "adminUrl": "",
+      "baseUrl": "",
+      "surrogateAuthRequired": false,
+      "enabled": true,
+      "alwaysDisplayInConsole": false,
+      "clientAuthenticatorType": "client-secret",
+      "redirectUris": ["http://localhost:5173/*"],
+      "webOrigins": ["http://localhost:5173"],
+      "notBefore": 0,
+      "bearerOnly": false,
+      "consentRequired": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "publicClient": true,
+      "frontchannelLogout": true,
+      "protocol": "openid-connect",
+      "attributes": {
+        "logout.confirmation.enabled": "false",
+        "id.token.as.detached.signature": "false",
+        "client.introspection.response.allow.jwt.claim.enabled": "false",
+        "standard.token.exchange.enabled": "false",
+        "oauth2.jwt.authorization.grant.enabled": "false",
+        "post.logout.redirect.uris": "http://localhost:5173/*",
+        "frontchannel.logout.session.required": "true",
+        "oauth2.device.authorization.grant.enabled": "false",
+        "backchannel.logout.revoke.offline.tokens": "false",
+        "use.refresh.tokens": "true",
+        "realm_client": "false",
+        "oidc.ciba.grant.enabled": "false",
+        "client.use.lightweight.access.token.enabled": "false",
+        "backchannel.logout.session.required": "true",
+        "request.object.required": "not required",
+        "client_credentials.use_refresh_token": "false",
+        "access.token.header.type.rfc9068": "false",
+        "tls.client.certificate.bound.access.tokens": "false",
+        "require.pushed.authorization.requests": "false",
+        "acr.loa.map": "{}",
+        "display.on.consent.screen": "false",
+        "pkce.code.challenge.method": "S256",
+        "token.response.type.bearer.lower-case": "false",
+        "dpop.bound.access.tokens": "false"
+      },
+      "authenticationFlowBindingOverrides": {},
+      "fullScopeAllowed": true,
+      "nodeReRegistrationTimeout": -1,
       "defaultClientScopes": [
         "web-origins",
         "acr",
@@ -1302,12 +1408,15 @@
           "protocolMapper": "oidc-usermodel-realm-role-mapper",
           "consentRequired": false,
           "config": {
-            "user.attribute": "foo",
             "introspection.token.claim": "true",
+            "multivalued": "true",
+            "userinfo.token.claim": "false",
+            "user.attribute": "foo",
+            "id.token.claim": "true",
+            "lightweight.claim": "false",
             "access.token.claim": "true",
             "claim.name": "realm_access.roles",
-            "jsonType.label": "String",
-            "multivalued": "true"
+            "jsonType.label": "String"
           }
         },
         {
