@@ -40,7 +40,8 @@ export interface Agent {
   role: UserRole;
   phone?: string;
   notificationPreference?: NotificationPreference;
-  isAcrive: boolean;
+  isActive: boolean;
   createdAt: string;
   lastLogin?: string;
 }
+
