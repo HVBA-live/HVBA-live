@@ -1,11 +1,7 @@
-export type SessionStatus = "Bezig" | "Start binnenkort" | "Gepland";
-
-interface StatusBadgeProps {
-  status: SessionStatus | string;
-}
+import type { StatusBadgeProps } from "../../types";
 
 const JudgeStatusBadge = ({ status }: StatusBadgeProps) => {
-  if (status === "Bezig") {
+    if (status === "Bezig") {
     return (
       <span className="inline-block bg-[#16a34a] text-white text-xs font-semibold px-6 py-1 rounded-full text-center min-w-[110px]">
         Bezig
