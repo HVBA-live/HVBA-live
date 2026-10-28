@@ -1,91 +1,63 @@
 import { useState } from "react";
-import type { FormEvent } from "react";
-import { useNavigate } from "react-router";
+import { useAuth } from "react-oidc-context";
 import type { NotificationPreference } from "../types";
 import ProfileUserInfo from "../components/profile/ProfileUserInfo";
-import ProfileName from "../components/profile/ProfileName";
-import ProfileEmail from "../components/profile/ProfileEmail";
-import ProfilePassword from "../components/profile/ProfilePassword";
 import ProfileNotification from "../components/profile/ProfileNotification";
 import ProfileActions from "../components/profile/ProfileActions";
-import { testUser } from "../testData";
-
-const isValidEmail = (email: string) => /\S+@\S+\.\S+/.test(email);
+import { getMainRole } from "../auth/roles";
 
 const Profile = () => {
-  const navigate = useNavigate();
-  const [firstName, setFirstName] = useState(testUser.firstName);
-  const [lastName, setLastName] = useState(testUser.lastName);
-  const [email, setEmail] = useState(testUser.email);
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const auth = useAuth();
+
+  const firstName = auth.user?.profile.given_name ?? "";
+  const lastName = auth.user?.profile.family_name ?? "";
+  const email = auth.user?.profile.email ?? "";
+  const role = getMainRole(auth.user);
+
+  // TODO: ophalen en opslaan via de backend (Neon)
   const [notificationPref, setNotificationPref] =
-    useState<NotificationPreference>(
-      testUser.notificationPreference || "whatsapp",
-    );
+    useState<NotificationPreference>("whatsapp");
 
-  const passwordTooShort = newPassword.length > 0 && newPassword.length < 12;
-  const passwordsDontMatch =
-    newPassword.length > 0 && newPassword !== confirmPassword;
-  const canSubmit =
-    isValidEmail(email) && !passwordTooShort && !passwordsDontMatch;
-
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // TODO: gegevens naar de backend sturen
-    alert("Profiel bijgewerkt");
-    setNewPassword("");
-    setConfirmPassword("");
-  };
-
-  const handleDelete = () => {
-    if (!confirm("Weet u zeker dat u uw account definitief wilt verwijderen?"))
-      return;
-    // TODO: account verwijderen via de backend
-    navigate("/login");
+  // Stuur de gebruiker naar een Keycloak-pagina voor één actie, en daarna terug naar /profile
+  const startKeycloakAction = (action: string) => {
+    auth.signinRedirect({
+      redirect_uri: `${window.location.origin}/profile`,
+      extraQueryParams: { kc_action: action },
+    });
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-6xl mx-auto space-y-6">
+    <div className="max-w-6xl mx-auto space-y-6">
       <h1 className="text-xl sm:text-2xl font-bold text-center">Profiel</h1>
 
       <div className="grid gap-6 lg:grid-cols-3 items-start">
         <div className="space-y-6">
           <ProfileUserInfo
-            firstName={testUser.firstName}
-            lastName={testUser.lastName}
-            role={testUser.role}
-          />
-          <ProfileActions canSubmit={canSubmit} onDelete={handleDelete} />
-        </div>
-
-        <div className="grid gap-6 md:grid-cols-2 items-start lg:col-span-2">
-          <ProfileName
             firstName={firstName}
             lastName={lastName}
-            onFirstNameChange={setFirstName}
-            onLastNameChange={setLastName}
-          />
-          <ProfileEmail
             email={email}
-            isValid={isValidEmail(email)}
-            onEmailChange={setEmail}
+            role={role}
           />
-          <ProfilePassword
-            newPassword={newPassword}
-            confirmPassword={confirmPassword}
-            onNewPasswordChange={setNewPassword}
-            onConfirmPasswordChange={setConfirmPassword}
+          <ProfileActions
+            onEditProfile={() => startKeycloakAction("UPDATE_PROFILE")}
+            onChangePassword={() => startKeycloakAction("UPDATE_PASSWORD")}
+            onDelete={async () => {
+              await auth.removeUser();
+              startKeycloakAction("delete_account");
+            }}
           />
-          {testUser.role === "gebruiker" && (
+        </div>
+
+        {role === "gebruiker" && (
+          <div className="lg:col-span-2">
             <ProfileNotification
               value={notificationPref}
               onChange={setNotificationPref}
             />
-          )}
-        </div>
+          </div>
+        )}
       </div>
-    </form>
+    </div>
   );
 };
 

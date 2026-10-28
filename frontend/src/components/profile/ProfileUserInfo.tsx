@@ -5,12 +5,14 @@ import ProfileCard from "./ProfileCard";
 interface ProfileUserInfoProps {
   firstName: string;
   lastName: string;
-  role: UserRole;
+  email: string;
+  role?: UserRole;
 }
 
 const ProfileUserInfo = ({
   firstName,
   lastName,
+  email,
   role,
 }: ProfileUserInfoProps) => {
   return (
@@ -24,7 +26,10 @@ const ProfileUserInfo = ({
           <p className="font-medium">
             {firstName} {lastName}
           </p>
-          <p className="text-sm text-muted-foreground capitalize">{role}</p>
+          <p className="text-sm text-muted-foreground">{email}</p>
+          {role && (
+            <p className="text-sm text-muted-foreground capitalize">{role}</p>
+          )}
         </div>
       </div>
     </ProfileCard>

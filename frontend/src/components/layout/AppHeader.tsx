@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import { useAuth } from "react-oidc-context";
 import { LogOut, Settings } from "lucide-react";
 import logo from "../../assets/HVBALogo.png";
-import { testUser } from "../../testData";
 
 interface AppHeaderProps {
   title: string;
@@ -10,7 +10,12 @@ interface AppHeaderProps {
 
 const AppHeader = ({ title }: AppHeaderProps) => {
   const navigate = useNavigate();
+  const auth = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const firstName = auth.user?.profile.given_name ?? "";
+  const lastName = auth.user?.profile.family_name ?? "";
+  const email = auth.user?.profile.email ?? "";
 
   const goTo = (path: string) => {
     setMenuOpen(false);
@@ -19,8 +24,7 @@ const AppHeader = ({ title }: AppHeaderProps) => {
 
   const handleLogout = () => {
     setMenuOpen(false);
-    // TODO: uitloggen via de backend
-    navigate("/login");
+    auth.signoutRedirect();
   };
 
   return (
@@ -42,8 +46,8 @@ const AppHeader = ({ title }: AppHeaderProps) => {
             className="rounded-full p-1 hover:bg-muted"
           >
             <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white font-medium text-sm">
-              {testUser.firstName.charAt(0)}
-              {testUser.lastName.charAt(0)}
+              {firstName.charAt(0)}
+              {lastName.charAt(0)}
             </div>
           </button>
 
@@ -51,11 +55,9 @@ const AppHeader = ({ title }: AppHeaderProps) => {
             <div className="absolute right-0 mt-2 w-56 rounded-md border border-border bg-white shadow-md py-1">
               <div className="px-3 py-2">
                 <p className="text-sm font-medium">
-                  {testUser.firstName} {testUser.lastName}
+                  {firstName} {lastName}
                 </p>
-                <p className="text-xs text-muted-foreground">
-                  {testUser.email}
-                </p>
+                <p className="text-xs text-muted-foreground">{email}</p>
               </div>
               <hr className="border-border" />
               <button

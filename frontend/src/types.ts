@@ -7,7 +7,7 @@ export interface StatusBadgeProps {
 }
 
 export interface ScheduleTableRowProps {
-  hour : string;
+  hour: string;
   chamber: string;
   caseNumber: string;
   determinationCode: string;
