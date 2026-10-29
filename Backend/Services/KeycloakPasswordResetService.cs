@@ -5,8 +5,11 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Security.Cryptography;
 using System.Text.Json.Serialization;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using MailKit.Net.Smtp;
 using MimeKit;
 
@@ -17,15 +20,43 @@ namespace JouwBackend.Services
         Task ResetUserPasswordAndSendEmailAsync();
     }
 
-    public class KeycloakPasswordResetService : IKeycloakPasswordResetService
+    // Door BackgroundService te erven draait deze klasse automatisch op de achtergrond van je .NET app
+    public class KeycloakPasswordResetService : BackgroundService, IKeycloakPasswordResetService
     {
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
+        private readonly ILogger<KeycloakPasswordResetService> _logger;
 
-        public KeycloakPasswordResetService(HttpClient httpClient, IConfiguration config)
+        public KeycloakPasswordResetService(
+            HttpClient httpClient, 
+            IConfiguration config,
+            ILogger<KeycloakPasswordResetService> logger)
         {
             _httpClient = httpClient;
             _config = config;
+            _logger = logger;
+        }
+
+        // DEZE METHODE BEHEERT DE 7-DAGEN TIMER
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            _logger.LogInformation("Wachtwoord Reset Background Service is gestart.");
+
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                try
+                {
+                    _logger.LogInformation("Automatische wekelijkse wachtwoord reset wordt uitgevoerd...");
+                    await ResetUserPasswordAndSendEmailAsync();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Fout opgetreden tijdens automatische wachtwoord reset.");
+                }
+
+                // Wacht exact 7 dagen tot de volgende uitvoering
+                await Task.Delay(TimeSpan.FromDays(7), stoppingToken);
+            }
         }
 
         public async Task ResetUserPasswordAndSendEmailAsync()
@@ -71,7 +102,6 @@ namespace JouwBackend.Services
             });
 
             var resetResponse = await _httpClient.SendAsync(request);
-            resetResponse.EnsureSuccessStatusCode();
 
             if (!resetResponse.IsSuccessStatusCode)
             {
@@ -79,8 +109,9 @@ namespace JouwBackend.Services
                 throw new Exception($"Keycloak Reset API fout ({resetResponse.StatusCode}): {errorBody}");
             }
 
-            // 4. E-mail verzenden naar Mailpit
+            // 4. E-mail verzenden
             await SendEmailAsync(targetUserEmail!, newPassword);
+            _logger.LogInformation("Wachtwoord succesvol gewijzigd en gemaild.");
         }
 
         private async Task SendEmailAsync(string toEmail, string newPassword)
@@ -97,16 +128,13 @@ namespace JouwBackend.Services
 
             using var smtp = new SmtpClient();
 
-            // Maak verbinding met Gmail via STARTTLS (Port 587)
             await smtp.ConnectAsync(
                 _config["Smtp:Host"], 
                 int.Parse(_config["Smtp:Port"]!), 
                 MailKit.Security.SecureSocketOptions.StartTls
             );
 
-            // Inloggen bij Gmail met je Gmail-adres en 16-letterig App-wachtwoord
             await smtp.AuthenticateAsync(_config["Smtp:User"], _config["Smtp:Pass"]);
-
             await smtp.SendAsync(message);
             await smtp.DisconnectAsync(true);
         }

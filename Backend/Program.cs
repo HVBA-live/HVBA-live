@@ -8,7 +8,9 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+// Program.cs
 builder.Services.AddHttpClient<IKeycloakPasswordResetService, KeycloakPasswordResetService>();
+builder.Services.AddHostedService<KeycloakPasswordResetService>(); //7 dagen timer
 
 var app = builder.Build();
 
