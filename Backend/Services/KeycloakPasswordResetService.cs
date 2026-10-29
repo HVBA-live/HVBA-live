@@ -96,18 +96,16 @@ namespace JouwBackend.Services
             };
 
             using var smtp = new SmtpClient();
-            
-            // Verbinding maken met Mailpit op localhost:1025 (zonder auth)
+
+            // Maak verbinding met Gmail via STARTTLS (Port 587)
             await smtp.ConnectAsync(
                 _config["Smtp:Host"], 
                 int.Parse(_config["Smtp:Port"]!), 
-                MailKit.Security.SecureSocketOptions.Auto
+                MailKit.Security.SecureSocketOptions.StartTls
             );
 
-            if (!string.IsNullOrEmpty(_config["Smtp:User"]))
-            {
-                await smtp.AuthenticateAsync(_config["Smtp:User"], _config["Smtp:Pass"]);
-            }
+            // Inloggen bij Gmail met je Gmail-adres en 16-letterig App-wachtwoord
+            await smtp.AuthenticateAsync(_config["Smtp:User"], _config["Smtp:Pass"]);
 
             await smtp.SendAsync(message);
             await smtp.DisconnectAsync(true);
