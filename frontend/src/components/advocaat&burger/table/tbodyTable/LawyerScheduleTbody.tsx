@@ -1,43 +1,44 @@
 import LawyerScheduleTableRow from "./LawyerScheduleTableRow";
 import type { ScheduleTableRowProps } from "../../../../types";
+import { useEffect } from "react";
+import { useState } from "react";
+import { getCases, type CaseItem } from "../../../../api/cases";
 
 interface LawyerScheduleTbodyProps {
   selectedChamber: string;
 }
 
-const sessions : ScheduleTableRowProps[] = [
-  {
-    hour: "09:00",
-    chamber: "B4E3",
-    caseNumber: "2024/AR/1835",
-    determinationCode: "747§2 al.3 Ger.W.",
-    status: "Bezig"
-  },
-  {
-    hour: "11:30",
-    chamber: "B4E3",
-    caseNumber: "2024/AR/1836",
-    determinationCode: "612§1 Ger.W.",
-    status: "Start binnenkort",
-  },
-  {
-    hour: "14:00",
-    chamber: "A2D1",
-    caseNumber: "2024/AR/1837",
-    determinationCode: "420 BW",
-    status: "Gepland",
-  },
-  {
-    hour: "16:30",
-    chamber: "A2D1",
-    caseNumber: "2024/AR/1838",
-    determinationCode: "310§1 Sw.",
-    status: "Gepland",
-  },
-];
-
 const LawyerScheduleTbody = ({selectedChamber}: LawyerScheduleTbodyProps) => {
+  const [sessions, setSessions] = useState<CaseItem[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadCases = async () => {
+      try {
+        const data = await getCases();
+        setSessions(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Onbekende fout");
+      }
+    };
+
+    loadCases();
+  }, []);
+
   const filtered = selectedChamber === "all" ? sessions : sessions.filter((sessionFilter) => sessionFilter.chamber === selectedChamber)
+
+  if (error) {
+    return (
+      <tbody>
+        <tr>
+          <td colSpan={6} className="px-4 py-3.5 text-sm text-red-600">
+            {error}
+          </td>
+        </tr>
+      </tbody>
+    );
+  }
+
     return (
         <tbody className="text-sm">
           {filtered.map((session) => (

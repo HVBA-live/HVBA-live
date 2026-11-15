@@ -1,5 +1,5 @@
 export type UserRole = "admin" | "justitie" | "gebruiker" | "politie";
-export type SessionStatus = "Bezig" | "Start binnenkort" | "Gepland";
+export type SessionStatus = "Bezig" | "Start binnenkort" | "Gepland" | "Afgehandeld";
 export type NotificationPreference = "sms" | "whatsapp";
 
 export interface StatusBadgeProps {
