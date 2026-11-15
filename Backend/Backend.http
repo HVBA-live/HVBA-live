@@ -1,6 +1,5 @@
-@Backend_HostAddress = http://localhost:5292
+@baseUrl = https://localhost:7110
 
-GET {{Backend_HostAddress}}/weatherforecast/
+### Alle zaken
+GET {{baseUrl}}/api/cases
 Accept: application/json
-
-###
