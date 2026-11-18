@@ -105,7 +105,17 @@
         "id": "ea350e53-d0d8-47ef-914b-2143f342657f",
         "name": "admin",
         "description": "",
-        "composite": false,
+        "composite": true,
+        "composites": {
+          "client": {
+            "realm-management": [
+              "manage-users",
+              "query-users",
+              "view-realm",
+              "view-users"
+            ]
+          }
+        },
         "clientRole": false,
         "containerId": "79c55818-7a92-4ed2-8200-8942d6463962",
         "attributes": {}
