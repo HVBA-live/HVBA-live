@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
-using JouwBackend.Services;
+using HVBA.Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace JouwBackend.Controllers
+namespace HVBA.Backend.Controllers
 {
     [ApiController]
     [Route("api/test")]

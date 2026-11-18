@@ -13,31 +13,32 @@ using Microsoft.Extensions.Logging;
 using MailKit.Net.Smtp;
 using MimeKit;
 
-namespace JouwBackend.Services
+namespace HVBA.Backend.Services
 {
     public interface IKeycloakPasswordResetService
     {
         Task ResetUserPasswordAndSendEmailAsync();
     }
 
-    // Door BackgroundService te erven draait deze klasse automatisch op de achtergrond van je .NET app
     public class KeycloakPasswordResetService : BackgroundService, IKeycloakPasswordResetService
     {
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
         private readonly ILogger<KeycloakPasswordResetService> _logger;
+        private readonly IOneTimePasswordStore _passwordStore;
 
         public KeycloakPasswordResetService(
             HttpClient httpClient, 
             IConfiguration config,
-            ILogger<KeycloakPasswordResetService> logger)
+            ILogger<KeycloakPasswordResetService> logger,
+            IOneTimePasswordStore passwordStore)
         {
             _httpClient = httpClient;
             _config = config;
             _logger = logger;
+            _passwordStore = passwordStore;
         }
 
-        // DEZE METHODE BEHEERT DE 7-DAGEN TIMER
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             _logger.LogInformation("Wachtwoord Reset Background Service is gestart.");
@@ -54,7 +55,6 @@ namespace JouwBackend.Services
                     _logger.LogError(ex, "Fout opgetreden tijdens automatische wachtwoord reset.");
                 }
 
-                // Wacht exact 7 dagen tot de volgende uitvoering
                 await Task.Delay(TimeSpan.FromDays(7), stoppingToken);
             }
         }
@@ -68,7 +68,6 @@ namespace JouwBackend.Services
             var targetUserId = _config["Keycloak:TargetUserId"];
             var targetUserEmail = _config["Keycloak:TargetUserEmail"];
 
-            // 1. Access Token opvragen bij Keycloak (Admin API)
             var tokenParams = new Dictionary<string, string>
             {
                 { "grant_type", "client_credentials" },
@@ -85,10 +84,8 @@ namespace JouwBackend.Services
             var tokenResult = await tokenResponse.Content.ReadFromJsonAsync<KeycloakTokenResponse>();
             var accessToken = tokenResult?.AccessToken;
 
-            // 2. Nieuw willekeurig wachtwoord van 16 karakters genereren
             var newPassword = GenerateRandomPassword(16);
 
-            // 3. Wachtwoord van de specifieke gebruiker updaten in Keycloak
             var request = new HttpRequestMessage(
                 HttpMethod.Put,
                 $"{keycloakUrl}/admin/realms/{realm}/users/{targetUserId}/reset-password"
@@ -109,21 +106,28 @@ namespace JouwBackend.Services
                 throw new Exception($"Keycloak Reset API fout ({resetResponse.StatusCode}): {errorBody}");
             }
 
-            // 4. E-mail verzenden
-            await SendEmailAsync(targetUserEmail!, newPassword);
-            _logger.LogInformation("Wachtwoord succesvol gewijzigd en gemaild.");
+            var token = _passwordStore.StorePassword(newPassword, TimeSpan.FromHours(24));
+            var baseUrl = _config["App:BaseUrl"]?.TrimEnd('/');
+            var revealLink = $"{baseUrl}/wachtwoord/{token}";
+
+            await SendEmailAsync(targetUserEmail!, revealLink);
+            _logger.LogInformation("Wachtwoord succesvol gewijzigd en eenmalige link gemaild.");
         }
 
-        private async Task SendEmailAsync(string toEmail, string newPassword)
+        private async Task SendEmailAsync(string toEmail, string revealLink)
         {
             var message = new MimeMessage();
             message.From.Add(new MailboxAddress(_config["Smtp:FromName"], _config["Smtp:FromEmail"]));
             message.To.Add(new MailboxAddress("", toEmail));
-            message.Subject = "Je nieuwe automatische wachtwoord";
+            message.Subject = "Je nieuwe eenmalige wachtwoordlink";
 
             message.Body = new TextPart("plain")
             {
-                Text = $"Hallo,\n\nJe nieuwe wachtwoord voor de komende 7 dagen is: {newPassword}\n\nMet vriendelijke groet,\nHet HVBA Team"
+                Text = $"Hallo,\n\n" +
+                       $"Klik op onderstaande link om je nieuwe wachtwoord voor de komende 7 dagen te bekijken.\n" +
+                       $"Let op: de link werkt maar één keer en na het klikken blijft het wachtwoord slechts 30 seconden zichtbaar.\n\n" +
+                       $"{revealLink}\n\n" +
+                       $"Met vriendelijke groet,\nHet HVBA Team"
             };
 
             using var smtp = new SmtpClient();

@@ -1,16 +1,17 @@
-using JouwBackend.Services;
+using HVBA.Backend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 
+builder.Services.AddMemoryCache();
+builder.Services.AddSingleton<IOneTimePasswordStore, OneTimePasswordStore>();
+builder.Services.AddHttpClient<KeycloakPasswordResetService>();
+builder.Services.AddHostedService(sp => sp.GetRequiredService<KeycloakPasswordResetService>());
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-// Program.cs
-builder.Services.AddHttpClient<IKeycloakPasswordResetService, KeycloakPasswordResetService>();
-builder.Services.AddHostedService<KeycloakPasswordResetService>(); //7 dagen timer
+
 
 var app = builder.Build();
 
