@@ -55,7 +55,7 @@ namespace JouwBackend.Services
                 }
 
                 // Wacht exact 7 dagen tot de volgende uitvoering
-                await Task.Delay(TimeSpan.FromDays(7), stoppingToken);
+                await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
             }
         }
 
