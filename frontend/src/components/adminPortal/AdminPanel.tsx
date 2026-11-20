@@ -2,14 +2,17 @@ import { useEffect, useState } from "react";
 import { useAuth } from "react-oidc-context";
 import ImportCases from "./ImportCases";
 import NotificationSettings from "./NotificationSettings";
+import CreateUserForm from "./CreateUserForm";
 import type { UserRole } from "../../types";
 import {
+  createUser,
   getUsers,
   getUserIdsWithRole,
   hvbaRoles,
   setUserEnabled,
   setUserRole,
 } from "../../api/keycloakAdmin";
+import type { NewUser } from "../../api/keycloakAdmin";
 
 type AdminTab = "manage" | "import" | "notifications";
 
@@ -77,6 +80,9 @@ const AdminPanel = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [creating, setCreating] = useState(false);
 
   useEffect(() => {
     let ignore = false;
@@ -170,6 +176,40 @@ const AdminPanel = () => {
       );
     } finally {
       setUpdatingId(null);
+    }
+  };
+
+  const handleCreate = async (newUser: NewUser) => {
+    const token = auth.user?.access_token;
+    if (!token) return;
+
+    setCreating(true);
+    setError(null);
+    try {
+      const id = await createUser(token, newUser);
+      const name = `${newUser.firstName} ${newUser.lastName}`.trim();
+
+      setUsers((old) => [
+        ...old,
+        {
+          id: id,
+          name: name,
+          email: newUser.email,
+          initials: (
+            newUser.firstName.charAt(0) + newUser.lastName.charAt(0)
+          ).toUpperCase(),
+          role: newUser.role,
+          active: true,
+        },
+      ]);
+    } catch (err) {
+      if ((err as Error).message.includes("409")) {
+        setError("Er bestaat al een gebruiker met dit e-mailadres.");
+      } else {
+        setError("Kon de gebruiker niet aanmaken.");
+      }
+    } finally {
+      setCreating(false);
     }
   };
 
@@ -309,14 +349,23 @@ const AdminPanel = () => {
                 </span>
               </div>
 
-              {/* TODO: gebruiker aanmaken */}
               <button
                 className="h-11 cursor-pointer whitespace-nowrap rounded-md bg-[#006db3] px-4.25 font-semibold text-white shadow-[0_5px_15px_rgba(0,85,150,0.12)] hover:bg-[#00558c]"
                 type="button"
+                onClick={() => setShowCreateForm(!showCreateForm)}
               >
                 Maak gebruiker
               </button>
             </div>
+
+            {showCreateForm && (
+              <CreateUserForm
+                roleLabels={roleLabels}
+                saving={creating}
+                onSave={handleCreate}
+                onCancel={() => setShowCreateForm(false)}
+              />
+            )}
 
             {error && (
               <p className="mb-4 text-sm font-semibold text-[#f34043]">

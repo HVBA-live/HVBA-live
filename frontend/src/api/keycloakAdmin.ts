@@ -9,6 +9,14 @@ export const hvbaRoles: UserRole[] = [
   "gebruiker",
 ];
 
+export interface NewUser {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  role: UserRole;
+}
+
 export interface KeyCloakUser {
   id: string;
   username: string;
@@ -108,4 +116,31 @@ export const setUserEnabled = async (
     ...user,
     enabled: enabled,
   });
+};
+
+export const createUser = async (
+  token: string,
+  newUser: NewUser,
+): Promise<string> => {
+  await request(token, "/users", "POST", {
+    username: newUser.email,
+    email: newUser.email,
+    firstName: newUser.firstName,
+    lastName: newUser.lastName,
+    enabled: true,
+    emailVerified: true,
+    credentials: [
+      { type: "password", value: newUser.password, temporary: true },
+    ],
+  });
+
+  const response = await request(
+    token,
+    `/users?email=${encodeURIComponent(newUser.email)}&exact=true`,
+  );
+  const users: KeyCloakUser[] = await response.json();
+  const userId = users[0].id;
+
+  await setUserRole(token, userId, newUser.role);
+  return userId;
 };
