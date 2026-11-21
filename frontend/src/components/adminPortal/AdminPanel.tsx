@@ -4,20 +4,25 @@ import ImportCases from "./ImportCases";
 import NotificationSettings from "./NotificationSettings";
 import CreateUserForm from "./CreateUserForm";
 import type { UserRole } from "../../types";
+import UserSettingsForm from "./UserSettingsForm";
 import {
   createUser,
   getUsers,
   getUserIdsWithRole,
   hvbaRoles,
+  resetPassword,
   setUserEnabled,
   setUserRole,
+  updateUserDetails,
 } from "../../api/keycloakAdmin";
-import type { NewUser } from "../../api/keycloakAdmin";
+import type { NewUser, UserDetails } from "../../api/keycloakAdmin";
 
 type AdminTab = "manage" | "import" | "notifications";
 
 interface AdminUser {
   id: string;
+  firstName: string;
+  lastName: string;
   name: string;
   email: string;
   initials: string;
@@ -84,6 +89,9 @@ const AdminPanel = () => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [creating, setCreating] = useState(false);
 
+  const [savingSettings, setSavingSettings] = useState(false);
+  const [info, setInfo] = useState<string | null>(null);
+
   useEffect(() => {
     let ignore = false;
 
@@ -110,6 +118,8 @@ const AdminPanel = () => {
 
           return {
             id: user.id,
+            firstName: firstName,
+            lastName: lastName,
             name: name,
             email: user.email ?? "",
             initials:
@@ -193,6 +203,8 @@ const AdminPanel = () => {
         ...old,
         {
           id: id,
+          firstName: newUser.firstName,
+          lastName: newUser.lastName,
           name: name,
           email: newUser.email,
           initials: (
@@ -210,6 +222,72 @@ const AdminPanel = () => {
       }
     } finally {
       setCreating(false);
+    }
+  };
+
+  const handleSaveDetails = async (user: AdminUser, details: UserDetails) => {
+    const token = auth.user?.access_token;
+    if (!token) return;
+
+    setSavingSettings(true);
+    setError(null);
+    setInfo(null);
+    try {
+      await updateUserDetails(token, user.id, details);
+      const name = `${details.firstName} ${details.lastName}`.trim();
+
+      setUsers((old) =>
+        old.map((u) =>
+          u.id === user.id
+            ? {
+                ...u,
+                firstName: details.firstName,
+                lastName: details.lastName,
+                name: name,
+                email: details.email,
+                initials: (
+                  details.firstName.charAt(0) + details.lastName.charAt(0)
+                ).toUpperCase(),
+              }
+            : u,
+        ),
+      );
+      setInfo(`De gegevens van ${name} zijn opgeslagen.`);
+      setSettingsFor(null);
+    } catch (err) {
+      if ((err as Error).message.includes("409")) {
+        setError("Er bestaat al een gebruiker met dit e-mailadres.");
+      } else {
+        setError(`Kon de gegevens van ${user.name} niet opslaan.`);
+      }
+    } finally {
+      setSavingSettings(false);
+    }
+  };
+
+  const handleResetPassword = async (
+    user: AdminUser,
+    password: string,
+    temporary: boolean,
+  ) => {
+    const token = auth.user?.access_token;
+    if (!token) return;
+
+    setSavingSettings(true);
+    setError(null);
+    setInfo(null);
+    try {
+      await resetPassword(token, user.id, password, temporary);
+      setInfo(
+        temporary
+          ? `${user.name} heeft een tijdelijk wachtwoord en moet bij de volgende login een nieuw kiezen.`
+          : `Het wachtwoord van ${user.name} is gewijzijgd`,
+      );
+      setSettingsFor(null);
+    } catch {
+      setError(`Kon het wachtwoord van ${user.name} niet resetten.`);
+    } finally {
+      setSavingSettings(false);
     }
   };
 
@@ -373,6 +451,12 @@ const AdminPanel = () => {
               </p>
             )}
 
+            {info && (
+              <p className="mb-4 text-sm font-semibold text-[#008044]">
+                {info}
+              </p>
+            )}
+
             <section className="flex flex-col gap-3">
               {loading && <p>Gebruikers laden...</p>}
 
@@ -451,7 +535,8 @@ const AdminPanel = () => {
 
                         <button
                           type="button"
-                          className="flex h-11 flex-[0_0_44px] cursor-pointer items-center justify-center rounded-md border border-[#d7e1ed] bg-white text-[#07376c] hover:bg-[#f0f4f9]"
+                          disabled={isMe}
+                          className="flex h-11 flex-[0_0_44px] cursor-pointer items-center justify-center rounded-md border border-[#d7e1ed] bg-white text-[#07376c] hover:bg-[#f0f4f9] disabled:cursor-not-allowed disabled:opacity-50"
                           aria-label={`Instellingen ${user.name}`}
                           onClick={() =>
                             setSettingsFor(
@@ -462,11 +547,20 @@ const AdminPanel = () => {
                           ⚙
                         </button>
                       </div>
-
                       {settingsFor === user.id && (
-                        <div className="col-span-full text-sm text-[#617c9e]">
-                          Instellingen voor {user.name} (demoweergave).
-                        </div>
+                        <UserSettingsForm
+                          firstName={user.firstName}
+                          lastName={user.lastName}
+                          email={user.email}
+                          saving={savingSettings}
+                          onSaveDetails={(details) =>
+                            handleSaveDetails(user, details)
+                          }
+                          onResetPassword={(password, temporary) =>
+                            handleResetPassword(user, password, temporary)
+                          }
+                          onClose={() => setSettingsFor(null)}
+                        />
                       )}
                     </article>
                   );
