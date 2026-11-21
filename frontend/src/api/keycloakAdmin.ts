@@ -26,6 +26,12 @@ export interface KeyCloakUser {
   enabled: boolean;
 }
 
+export interface UserDetails {
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+
 interface KeyCloakRole {
   id: string;
   name: string;
@@ -143,4 +149,28 @@ export const createUser = async (
 
   await setUserRole(token, userId, newUser.role);
   return userId;
+};
+
+export const updateUserDetails = async (
+  token: string,
+  userId: string,
+  details: UserDetails,
+) => {
+  const response = await request(token, `/users/${userId}`);
+  const user: KeyCloakUser = await response.json();
+  await request(token, `/users/${userId}`, "PUT", { ...user, ...details });
+};
+
+export const resetPassword = async (
+  token: string,
+  userId: string,
+  password: string,
+  temporary: boolean,
+) => {
+  await request(token, `/users/${userId}/reset-password`, "PUT", {
+    type: "password",
+    value: password,
+    temporary: temporary,
+  });
+  await request(token, `/users/${userId}/logout`, "POST");
 };
