@@ -1,24 +1,35 @@
 import { Bell } from "lucide-react";
-import type { NotificationPreference } from "../../types";
 import ProfileCard from "./ProfileCard";
 
 interface ProfileNotificationProps {
-  value: NotificationPreference;
-  onChange: (value: NotificationPreference) => void;
+  phoneNumber: string;
+  notificationPreference: string;
 }
 
-const ProfileNotification = ({ value, onChange }: ProfileNotificationProps) => {
+const preferenceLabels: Record<string, string> = {
+  sms: "SMS",
+  whatsapp: "WhatsApp",
+};
+
+const ProfileNotification = ({
+  phoneNumber,
+  notificationPreference,
+}: ProfileNotificationProps) => {
   return (
-    <ProfileCard title="Meldingvoorkeur" icon={<Bell size={20} />}>
-      <select
-        id="notification-pref"
-        value={value}
-        onChange={(e) => onChange(e.target.value as NotificationPreference)}
-        className="flex h-10 w-full rounded-md border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-      >
-        <option value="sms">SMS</option>
-        <option value="whatsapp">WhatsApp</option>
-      </select>
+    <ProfileCard title="Meldingen" icon={<Bell size={20} />}>
+      <div className="space-y-1">
+        <p className="text-sm text-muted-foreground">Telefoonnummer</p>
+        <p className="font-medium">{phoneNumber || "Niet ingevuld"}</p>
+      </div>
+      <div className="space-y-1">
+        <p className="text-sm text-muted-foreground">Meldingvoorkeur</p>
+        <p className="font-medium">
+          {preferenceLabels[notificationPreference] ?? "Niet ingevuld"}
+        </p>
+      </div>
+      <p className="text-xs text-muted-foreground">
+        Wijzigen kan via "Gegevens wijzigen".
+      </p>
     </ProfileCard>
   );
 };

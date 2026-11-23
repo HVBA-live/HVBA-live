@@ -444,6 +444,10 @@ body,
   grid-column: auto;
 }
 
+#kc-register-form > .pf-v5-c-form__group:has(#phoneNumber),
+#kc-register-form > .pf-v5-c-form__group:has([name="notificationPreference"]) {
+  grid-column: auto;
+}
 /* balkje van de privacyvoorwaarden en de link onderaan */
 #kc-register-form .hvba-terms-row {
   margin: 4px 0 0;
