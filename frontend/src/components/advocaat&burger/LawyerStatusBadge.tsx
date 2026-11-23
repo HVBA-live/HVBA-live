@@ -17,6 +17,14 @@ const LawyerStatusBadge = ({ status }: StatusBadgeProps) => {
     );
   }
 
+  if (status === "Afgehandeld"){
+    return (
+      <span className="inline-block bg-gray-500 text-white text-xs font-semibold px-3 py-1 rounded-full text-center min-w-[110px]">
+        Afgehandeld
+      </span>
+    )
+  }
+
   return (
     <span className="inline-block bg-white border border-gray-200 text-gray-700 text-xs font-medium px-5 py-1 rounded-full text-center min-w-[110px]">
       Gepland

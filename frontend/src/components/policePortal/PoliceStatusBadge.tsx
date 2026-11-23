@@ -1,7 +1,7 @@
 import type { StatusBadgeProps } from "../../types";
 
 const PoliceStatusBadge = ({ status }: StatusBadgeProps) => {
-    if (status === "Bezig") {
+  if (status === "Bezig") {
     return (
       <span className="inline-block bg-[#16a34a] text-white text-xs font-semibold px-6 py-1 rounded-full text-center min-w-[110px]">
         Bezig
@@ -13,6 +13,14 @@ const PoliceStatusBadge = ({ status }: StatusBadgeProps) => {
     return (
       <span className="inline-block bg-[#eab308] text-white text-xs font-semibold px-3 py-1 rounded-full text-center min-w-[110px]">
         Start binnenkort
+      </span>
+    );
+  }
+
+  if (status === "Afgehandeld") {
+    return (
+      <span className="inline-block bg-gray-500 text-white text-xs font-semibold px-3 py-1 rounded-full text-center min-w-[110px]">
+        Afgehandeld
       </span>
     );
   }
