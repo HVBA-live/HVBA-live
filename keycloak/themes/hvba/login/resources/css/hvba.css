@@ -244,3 +244,212 @@ body,
     box-shadow: none;
   }
 }
+
+/* ===== Verplichte velden: blijven verplicht, maar zonder * ===== */
+.pf-v5-c-form__label-required,
+.pf-v5-c-login__main-body .subtitle {
+  display: none !important;
+}
+
+/* ===== Privacyvoorwaarden: balkje in het formulier ===== */
+.hvba-terms-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 16px 0;
+  padding: 12px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #f9fafb;
+  font-size: 14px;
+  color: #374151;
+}
+
+.hvba-terms-row.accepted {
+  border-color: #a7f3c4;
+  background: #dcfce7;
+  color: #008044;
+}
+
+.hvba-terms-open {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--hvba-blue);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.hvba-terms-open:hover {
+  text-decoration: underline;
+}
+
+/* ===== Privacyvoorwaarden: pop-up ===== */
+.hvba-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgb(25 39 74 / 0.6);
+}
+
+.hvba-modal-overlay[hidden] {
+  display: none;
+}
+
+.hvba-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 40rem;
+  max-height: 90vh;
+  padding: 32px;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 20px 50px rgb(0 0 0 / 0.25);
+}
+
+.hvba-modal h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--hvba-dark);
+}
+
+#kc-registration-terms-text {
+  max-height: 50vh;
+  overflow-y: auto;
+  padding-right: 8px;
+  font-size: 14px;
+  color: #374151;
+}
+
+#kc-registration-terms-text p {
+  margin-bottom: 8px;
+}
+
+.hvba-modal-hint {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.hvba-modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.hvba-modal-buttons button {
+  height: 44px;
+  padding: 0 24px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.hvba-modal-accept {
+  border: 0;
+  color: #ffffff;
+  background: linear-gradient(
+    to right in oklab,
+    var(--hvba-blue),
+    var(--hvba-blue-glow)
+  );
+}
+
+.hvba-modal-accept:disabled {
+  background: #d1d5db;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
+.hvba-modal-decline {
+  border: 1px solid var(--hvba-blue);
+  background: #ffffff;
+  color: var(--hvba-blue);
+}
+
+.hvba-modal-decline:hover {
+  background: #f0f4f9;
+}
+
+#termsAccepted:disabled,
+#termsAccepted:disabled + label {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* ===== Knop grijs zolang de voorwaarden niet aanvaard zijn ===== */
+.pf-v5-c-button.pf-m-primary:disabled {
+  background: #d1d5db !important;
+  color: #6b7280 !important;
+  box-shadow: none !important;
+  cursor: not-allowed;
+}
+
+/* ===== Registerpagina compacter ===== */
+[data-page-id="login-register"] .pf-v5-c-login__container {
+  padding: 24px;
+}
+
+[data-page-id="login-register"] .pf-v5-c-login__header {
+  margin-bottom: 16px !important;
+  padding-bottom: 12px !important;
+}
+
+[data-page-id="login-register"] #kc-header-wrapper {
+  font-size: 20px;
+}
+
+[data-page-id="login-register"] #kc-header-wrapper::before {
+  height: 56px;
+  margin-bottom: 4px;
+}
+
+[data-page-id="login-register"] .pf-v5-c-login__main-header {
+  margin-bottom: 16px !important;
+}
+
+[data-page-id="login-register"] #kc-page-title {
+  font-size: 22px;
+}
+
+/* minder ruimte tussen de velden */
+#kc-register-form {
+  --pf-v5-c-form--GridGap: 12px;
+}
+
+#kc-register-form .pf-v5-c-form-control > input {
+  padding: 6px 12px;
+}
+
+/* voornaam en achternaam naast elkaar */
+#kc-register-form {
+  grid-template-columns: 1fr 1fr;
+  column-gap: 12px;
+}
+
+#kc-register-form > * {
+  grid-column: 1 / -1;
+}
+
+#kc-register-form > .pf-v5-c-form__group:has(#firstName),
+#kc-register-form > .pf-v5-c-form__group:has(#lastName) {
+  grid-column: auto;
+}
+
+/* balkje van de privacyvoorwaarden en de link onderaan */
+#kc-register-form .hvba-terms-row {
+  margin: 4px 0 0;
+  padding: 10px 12px;
+}
+
+[data-page-id="login-register"] .pf-v5-c-login__main-footer-band {
+  margin-top: 8px;
+}
