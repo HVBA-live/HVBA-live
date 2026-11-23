@@ -1,6 +1,4 @@
-import { useState } from "react";
 import { useAuth } from "react-oidc-context";
-import type { NotificationPreference } from "../types";
 import ProfileUserInfo from "../components/profile/ProfileUserInfo";
 import ProfileNotification from "../components/profile/ProfileNotification";
 import ProfileActions from "../components/profile/ProfileActions";
@@ -12,13 +10,11 @@ const Profile = () => {
   const firstName = auth.user?.profile.given_name ?? "";
   const lastName = auth.user?.profile.family_name ?? "";
   const email = auth.user?.profile.email ?? "";
+  const phoneNumber = auth.user?.profile.phone_number ?? "";
+  const notificationPreference =
+    (auth.user?.profile.notification_preference as string | undefined) ?? "";
   const role = getMainRole(auth.user);
 
-  // TODO: ophalen en opslaan via de backend (Neon)
-  const [notificationPref, setNotificationPref] =
-    useState<NotificationPreference>("whatsapp");
-
-  // Stuur de gebruiker naar een Keycloak-pagina voor één actie, en daarna terug naar /profile
   const startKeycloakAction = (action: string) => {
     auth.signinRedirect({
       redirect_uri: `${window.location.origin}/profile`,
@@ -51,8 +47,8 @@ const Profile = () => {
         {role === "gebruiker" && (
           <div className="lg:col-span-2">
             <ProfileNotification
-              value={notificationPref}
-              onChange={setNotificationPref}
+              phoneNumber={phoneNumber}
+              notificationPreference={notificationPreference}
             />
           </div>
         )}
