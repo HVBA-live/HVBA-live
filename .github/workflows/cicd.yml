@@ -27,7 +27,7 @@ jobs:
       - name: Frontend bouwen en pushen
         uses: docker/build-push-action@v6
         with:
-          context: ./Frontend
+          context: ./frontend
           push: true
           tags: |
             ${{ env.REGISTRY }}/frontend:latest
