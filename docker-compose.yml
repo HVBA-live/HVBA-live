@@ -1,0 +1,55 @@
+services:
+  keycloak:
+    image: JOUW_DOCKERHUB_NAAM/hvba:keycloak
+    container_name: hvba-keycloak
+    environment:
+      # Koppeling met externe serverless PostgreSQL (met SSL verplicht)
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://ep-flat-forest-b45a67uo-pooler.c-6.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+      KC_DB_USERNAME: neondb_owner
+      KC_DB_PASSWORD: npg_sNrZMVBXu98n
+
+      # Voorkom vastlopende verbindingen als een serverless DB in slaapstand gaat:
+      KC_DB_POOL_MIN_SIZE: "0"
+      KC_DB_POOL_INITIAL_SIZE: "1"
+      KC_DB_POOL_MAX_SIZE: "10"
+
+      # Admin en hostname-instellingen
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: mQb4GeheSEKr
+      KC_HTTP_ENABLED: "true"
+      KC_HOSTNAME: http://94.237.54.181:8081
+    ports:
+      - "8081:8080"
+    networks:
+      - hvba-net
+    restart: always
+
+  backend:
+    image: 11jens/hvba:backend
+    container_name: hvba-backend
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_HTTP_PORTS: "8080"
+      Keycloak__Authority: http://keycloak:8080/realms/hvba
+    ports:
+      - "8080:8080"
+    depends_on:
+      - keycloak
+    networks:
+      - hvba-net
+    restart: always
+
+  frontend:
+    image: 11jens/hvba:frontend
+    container_name: hvba-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - hvba-net
+    restart: always
+
+networks:
+  hvba-net:
