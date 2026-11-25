@@ -11,8 +11,6 @@ const Profile = () => {
   const lastName = auth.user?.profile.family_name ?? "";
   const email = auth.user?.profile.email ?? "";
   const phoneNumber = auth.user?.profile.phone_number ?? "";
-  const notificationPreference =
-    (auth.user?.profile.notification_preference as string | undefined) ?? "";
   const role = getMainRole(auth.user);
 
   const startKeycloakAction = (action: string) => {
@@ -46,10 +44,7 @@ const Profile = () => {
 
         {role === "gebruiker" && (
           <div className="lg:col-span-2">
-            <ProfileNotification
-              phoneNumber={phoneNumber}
-              notificationPreference={notificationPreference}
-            />
+            <ProfileNotification phoneNumber={phoneNumber} />
           </div>
         )}
       </div>

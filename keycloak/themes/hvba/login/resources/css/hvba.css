@@ -444,8 +444,8 @@ body,
   grid-column: auto;
 }
 
-#kc-register-form > .pf-v5-c-form__group:has(#phoneNumber),
-#kc-register-form > .pf-v5-c-form__group:has([name="notificationPreference"]) {
+#kc-register-form > .pf-v5-c-form__group:has(),
+#kc-register-form > .pf-v5-c-form__group:has() {
   grid-column: auto;
 }
 /* balkje van de privacyvoorwaarden en de link onderaan */
