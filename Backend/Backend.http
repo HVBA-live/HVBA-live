@@ -1,6 +1,29 @@
-@Backend_HostAddress = http://localhost:5292
+@baseUrl = https://localhost:7110
 
-GET {{Backend_HostAddress}}/weatherforecast/
+### krijg zaken
+GET {{baseUrl}}/api/cases
 Accept: application/json
 
-###
+### Status aanpassen
+Patch {{baseUrl}}/api/cases/3/Status
+Content-Type: application/json
+
+{
+  "status": "Bezig"
+}
+
+### Ongeldige status (400)
+PATCH {{baseUrl}}/api/cases/3/status
+Content-Type: application/json
+
+{
+  "status": "Klaar"
+}
+
+### Zaak bestaat niet (404)
+PATCH {{baseUrl}}/api/cases/99/status
+Content-Type: application/json
+
+{
+  "status": "Bezig"
+}

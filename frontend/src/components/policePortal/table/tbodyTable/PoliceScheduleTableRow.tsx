@@ -9,6 +9,7 @@ import type { ScheduleTableRowProps } from "../../../../types";
 const getBackGroundColor = (status : string) => {
     if (status === "Bezig") return "bg-[#edf7f2]";
     if (status === "Start binnenkort") return "bg-[#fefce8]";
+    if (status === "Afgehandeld") return "bg-gray-200 text-gray-500";
     return "";
 }
 
