@@ -2,7 +2,7 @@ name: CI/CD Frontend, .NET API & Keycloak
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "cicd" ]
 
 env:
   REGISTRY: hvba-live.programmeren-ap.be
