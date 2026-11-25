@@ -9,7 +9,7 @@ env:
 
 jobs:
   build-and-push:
-    runs-on: hvba-live-runner
+    runs-on: self-hosted
     steps:
       - name: Code ophalen
         uses: actions/checkout@v4
@@ -64,7 +64,7 @@ jobs:
 
   deploy:
     needs: build-and-push
-    runs-on: hvba-live-runner
+    runs-on: self-hosted
     steps:
       - name: Nieuwe images ophalen en containers herstarten
         run: |
