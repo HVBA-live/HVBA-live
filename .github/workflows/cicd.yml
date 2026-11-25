@@ -9,7 +9,7 @@ env:
 
 jobs:
   build-and-push:
-    runs-on: ubuntu-latest
+    runs-on: hvba-live-runner
     steps:
       - name: Code ophalen
         uses: actions/checkout@v4
