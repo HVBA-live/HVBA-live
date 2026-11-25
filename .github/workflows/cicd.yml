@@ -49,7 +49,7 @@ jobs:
       - name: Keycloak bouwen en pushen
         uses: docker/build-push-action@v6
         with:
-          context: ./Keycloak
+          context: ./keycloak
           push: true
           tags: |
             ${{ env.REGISTRY }}/keycloak:latest
