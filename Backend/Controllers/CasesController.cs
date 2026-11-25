@@ -10,7 +10,7 @@ namespace HVBA.Backend.Controllers
 {
     [ApiController]
     [Route("api/cases")]
-    [Authorize]
+    //[Authorize] later terug aanzetten//
     public class CasesController : ControllerBase
     {
         private readonly CaseDataStore _dataStore;
@@ -32,7 +32,7 @@ namespace HVBA.Backend.Controllers
         }
 
         [HttpPatch("{caseId:int}/status")]
-        [Authorize(Roles = "justitie,admin")]
+        //[Authorize(Roles = "justitie,admin")] later terug aanzetten//
         public async Task<IActionResult> UpdateCaseStatus(int caseId, CasesStatusForUpdateDto statusForUpdate)
         {
             var caseFromStore = _dataStore.Cases.FirstOrDefault(c => c.Id == caseId);

@@ -2,9 +2,9 @@ using HVBA.Backend.Services;
 using HVBA.Backend.Data;
 using HVBA.Backend.Hubs;
 
-using HVBA.Backend.Auth;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
+//using HVBA.Backend.Auth; later weer aanzetten
+//using Microsoft.AspNetCore.Authentication.JwtBearer; later weer aanzetten
+//using Microsoft.IdentityModel.Tokens; later weer aanzetten
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,45 +28,45 @@ builder.Services.AddCors(options =>
 builder.Services.AddSignalR();
 
 // keycloak: access token van de frontend controleren
-var keycloakAuthority = $"{builder.Configuration["Keycloak:BaseUrl"]}/realms/{builder.Configuration["Keycloak:Realm"]}";
+// var keycloakAuthority = $"{builder.Configuration["Keycloak:BaseUrl"]}/realms/{builder.Configuration["Keycloak:Realm"]}";
 
-builder.Services
-    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.Authority = keycloakAuthority;               
-        options.RequireHttpsMetadata = !builder.Environment.IsDevelopment(); 
-        options.MapInboundClaims = false;                     
+// builder.Services
+//     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+//     .AddJwtBearer(options =>
+//     {
+//         options.Authority = keycloakAuthority;               
+//         options.RequireHttpsMetadata = !builder.Environment.IsDevelopment(); 
+//         options.MapInboundClaims = false;                     
 
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidIssuer = keycloakAuthority,
-            ValidateAudience = false,                   
-            NameClaimType = "preferred_username"
-        };
+//         options.TokenValidationParameters = new TokenValidationParameters
+//         {
+//             ValidIssuer = keycloakAuthority,
+//             ValidateAudience = false,                   
+//             NameClaimType = "preferred_username"
+//         };
 
-        options.Events = new JwtBearerEvents
-        {
-            OnMessageReceived = context =>
-            {
-                var accessToken = context.Request.Query["access_token"];
+//         options.Events = new JwtBearerEvents
+//         {
+//             OnMessageReceived = context =>
+//             {
+//                 var accessToken = context.Request.Query["access_token"];
 
-                if (!string.IsNullOrEmpty(accessToken) && context.HttpContext.Request.Path.StartsWithSegments("/hubs"))
-                {
-                    context.Token = accessToken;
-                }
+//                 if (!string.IsNullOrEmpty(accessToken) && context.HttpContext.Request.Path.StartsWithSegments("/hubs"))
+//                 {
+//                     context.Token = accessToken;
+//                 }
 
-                return Task.CompletedTask;
-            },
+//                 return Task.CompletedTask;
+//             },
 
-            // rollen uit realm_access omzetten
-            OnTokenValidated = context =>
-            {
-                KeycloakRoles.AddRealmRoles(context.Principal);
-                return Task.CompletedTask;
-            }
-        };
-    });
+//             // rollen uit realm_access omzetten
+//             OnTokenValidated = context =>
+//             {
+//                 KeycloakRoles.AddRealmRoles(context.Principal);
+//                 return Task.CompletedTask;
+//             }
+//         };
+//     });
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -87,7 +87,7 @@ app.UseHttpsRedirection();
 
 app.UseCors("Frontend");
 
-app.UseAuthentication(); // token controleren
+//app.UseAuthentication(); // token controleren => later weer aanzetten //
 app.UseAuthorization(); // rollen
 
 app.UseAuthorization();

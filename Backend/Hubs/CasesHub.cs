@@ -5,7 +5,7 @@ namespace HVBA.Backend.Hubs
 {
     //     verbindingspunt voor real-time updates
     // clients luisteren alleen; de backend stuurt berichten via IHubContext
-    [Authorize]
+    //[Authorize] later terug aanzetten //
     public class CasesHub: Hub
     {
         
