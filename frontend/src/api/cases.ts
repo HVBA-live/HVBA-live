@@ -5,6 +5,13 @@ export interface CaseItem extends ScheduleTableRowProps{
     date: string,
 }
 
+export interface CsvImportResult {
+  totalProcessed: number;
+  created: number;
+  updated: number;
+  errors: string[];
+}
+
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export const getCases = async (): Promise<CaseItem[]> => {
@@ -40,3 +47,20 @@ export const updateCaseStatus = async (id: number, status: string): Promise<void
     throw new Error("Kan de status niet aanpassen. Draait de backend?");
   }
 }
+
+export const importCasesCsv = async (file: File): Promise<CsvImportResult> => {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await fetch(`${apiUrl}/api/cases/import`, {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => null);
+    throw new Error(errorData?.message || `Fout bij importeren CSV: ${response.status}`);
+  }
+
+  return await response.json();
+};

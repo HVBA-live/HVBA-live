@@ -1,7 +1,6 @@
 using HVBA.Backend.Services;
 using HVBA.Backend.Data;
 using HVBA.Backend.Hubs;
-
 //using HVBA.Backend.Auth; later weer aanzetten
 //using Microsoft.AspNetCore.Authentication.JwtBearer; later weer aanzetten
 //using Microsoft.IdentityModel.Tokens; later weer aanzetten
@@ -15,6 +14,7 @@ builder.Services.AddHttpClient<KeycloakPasswordResetService>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<KeycloakPasswordResetService>());
 
 builder.Services.AddSingleton<CaseDataStore>();
+builder.Services.AddScoped<CsvImportService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("Frontend", policy =>

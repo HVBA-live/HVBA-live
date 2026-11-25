@@ -19,6 +19,11 @@ export const useCaseStatusUpdates = (setSessions: Dispatch<SetStateAction<CaseIt
       );
     });
 
+    // bericht van de backend: er is een CSV geïmporteerd, vervang de lijst live
+    connection.on("CasesUpdated", (updatedCases: CaseItem[]) => {
+      setSessions(updatedCases);
+    });
+
     connection.start().catch((error) => {
       if (!(error instanceof signalR.AbortError)) {
         console.error("SignalR verbinding mislukt:", error);

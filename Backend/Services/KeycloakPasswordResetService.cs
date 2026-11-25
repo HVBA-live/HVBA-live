@@ -7,10 +7,12 @@ using System.Security.Cryptography;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using MailKit;
+using MailKit.Net.Smtp;
+using MailKit.Security;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using MailKit.Net.Smtp;
 using MimeKit;
 
 namespace HVBA.Backend.Services
@@ -116,8 +118,15 @@ namespace HVBA.Backend.Services
 
         private async Task SendEmailAsync(string toEmail, string revealLink)
         {
+            var fromName = _config["Smtp:FromName"] ?? "HVBA Live";
+            var fromEmail = _config["Smtp:FromEmail"] ?? "noreply@hvba.be";
+            var smtpHost = _config["Smtp:Host"] ?? "localhost";
+            var smtpPort = int.Parse(_config["Smtp:Port"] ?? "1025");
+            var smtpUser = _config["Smtp:User"];
+            var smtpPass = _config["Smtp:Pass"];
+
             var message = new MimeMessage();
-            message.From.Add(new MailboxAddress(_config["Smtp:FromName"], _config["Smtp:FromEmail"]));
+            message.From.Add(new MailboxAddress(fromName, fromEmail));
             message.To.Add(new MailboxAddress("", toEmail));
             message.Subject = "Je nieuwe eenmalige wachtwoordlink";
 
@@ -132,14 +141,15 @@ namespace HVBA.Backend.Services
 
             using var smtp = new SmtpClient();
 
-            await smtp.ConnectAsync(
-                _config["Smtp:Host"], 
-                int.Parse(_config["Smtp:Port"]!), 
-                MailKit.Security.SecureSocketOptions.StartTls
-            );
+            // SecureSocketOptions.Auto werkt zowel voor Mailpit (zonder TLS) als productie-SMTP (met StartTLS)
+            await smtp.ConnectAsync(smtpHost, smtpPort, SecureSocketOptions.Auto);
 
-            await smtp.AuthenticateAsync(_config["Smtp:User"], _config["Smtp:Pass"]);
-            await smtp.SendAsync(message);
+            if (!string.IsNullOrWhiteSpace(smtpUser) && !string.IsNullOrWhiteSpace(smtpPass))
+            {
+                await smtp.AuthenticateAsync(smtpUser, smtpPass);
+            }
+
+            await smtp.SendAsync(new SendRequest(message));
             await smtp.DisconnectAsync(true);
         }
 
