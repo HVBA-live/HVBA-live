@@ -52,8 +52,8 @@ jobs:
           context: ./keycloak
           push: true
           tags: |
-            ${{ env.REGISTRY }}/keycloak:latest
-            ${{ env.REGISTRY }}/keycloak:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/hvba:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/hvba:${{ github.sha }}
 
   deploy:
     needs: build-and-push
