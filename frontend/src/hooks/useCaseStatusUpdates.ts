@@ -4,7 +4,6 @@ import type { CaseItem } from "../api/cases";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
-// luistert naar statuswijzigingen van de backend (SignalR) en past de lijst meteen aan
 export const useCaseStatusUpdates = (setSessions: Dispatch<SetStateAction<CaseItem[]>>) => {
   useEffect(() => {
     const connection = new signalR.HubConnectionBuilder()
@@ -12,14 +11,23 @@ export const useCaseStatusUpdates = (setSessions: Dispatch<SetStateAction<CaseIt
       .withAutomaticReconnect()
       .build();
 
-    // bericht van de backend: zaak {id} heeft nu status {status}
+    // Statuswijziging van een zaak
     connection.on("CaseStatusChanged", (id: number, status: string) => {
       setSessions((current) =>
         current.map((session) => (session.id === id ? { ...session, status } : session))
       );
     });
 
-    // bericht van de backend: er is een CSV geïmporteerd, vervang de lijst live
+    // Live update van het aantal abonnees (voor Judge Portal)
+    connection.on("CaseSubscriptionChanged", (id: number, subscriberCount: number) => {
+      setSessions((current) =>
+        current.map((session) =>
+          session.id === id ? { ...session, subscriberCount } : session
+        )
+      );
+    });
+
+    // CSV-import
     connection.on("CasesUpdated", (updatedCases: CaseItem[]) => {
       setSessions(updatedCases);
     });
@@ -30,7 +38,6 @@ export const useCaseStatusUpdates = (setSessions: Dispatch<SetStateAction<CaseIt
       }
     });
 
-    // cleanup: verbinding sluiten als de component verdwijnt
     return () => {
       connection.stop();
     };

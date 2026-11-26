@@ -1,15 +1,32 @@
-import { useState } from "react"
-
-const JudgeScheduleNotificationData = () => {
-    const [isSubscribed, setIsSubscribed] = useState<boolean>(false);
-
-    return (
-        <td className="px-4 py-3.5 text-right">
-            <button className={`w-32 py-1.5 px-3 rounded-md text-xs font-semibold ${isSubscribed ? "border border-gray-200 text-white bg-[#16a34a]": "bg-[#005a9c] text-white border border-gray-200"}`} onClick={() => setIsSubscribed(!isSubscribed)}>
-                {isSubscribed ? "Geabonneerd" : "Abonneren"}
-            </button>
-        </td>
-    )
+interface JudgeScheduleNotificationDataProps {
+  subscriberCount?: number;
 }
+
+const JudgeScheduleNotificationData = ({
+  subscriberCount = 0,
+}: JudgeScheduleNotificationDataProps) => {
+  return (
+    <td className="px-4 py-3.5 text-right">
+      <div className="inline-flex items-center justify-end gap-1.5 text-[#003d66] font-semibold text-xs pr-2">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="w-4 h-4 text-[#005a9c]"
+        >
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+        </svg>
+        <span>{subscriberCount}</span>
+      </div>
+    </td>
+  );
+};
 
 export default JudgeScheduleNotificationData;

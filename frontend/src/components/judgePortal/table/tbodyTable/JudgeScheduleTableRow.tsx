@@ -1,3 +1,4 @@
+import JudgeScheduleNumberData from "./JudgeScheduleNumberData";
 import JudgeScheduleHourData from "./JudgeScheduleHourData";
 import JudgeScheduleChamberData from "./JudgeScheduleChamberData";
 import JudgeScheduleDeterminationCodeData from "./JudgeScheduleDeterminationCodeData";
@@ -8,27 +9,44 @@ import type { ScheduleTableRowProps } from "../../../../types";
 
 interface JudgeScheduleTableRowProps extends ScheduleTableRowProps {
   id: number;
+  rowNumber: number;
+  subscriberCount?: number;
   onStatusChange: (id: number, status: string) => void;
 }
 
-const getBackGroundColor = (status : string) => {
-    if (status === "Bezig") return "bg-[#edf7f2]";
-    if (status === "Start binnenkort") return "bg-[#fefce8]";
-    if (status === "Afgehandeld") return "bg-gray-200 text-gray-500";
-    return "";
-}
+const getBackGroundColor = (status: string) => {
+  if (status === "Bezig") return "bg-[#edf7f2]";
+  if (status === "Start binnenkort") return "bg-[#fefce8]";
+  if (status === "Afgehandeld") return "bg-gray-200 text-gray-500";
+  return "";
+};
 
-const JudgeScheduleTableRow = ({id, hour,chamber,caseNumber,determinationCode,status, onStatusChange} : JudgeScheduleTableRowProps) => {
-    return (
-        <tr className={`border-b border-gray-100 ${getBackGroundColor(status)}`}>
-            <JudgeScheduleHourData hour={hour} />
-            <JudgeScheduleChamberData chamber={chamber} />
-            <JudgeScheduleCaseNumberData caseNumber={caseNumber} />
-            <JudgeScheduleDeterminationCodeData determinationCode={determinationCode} />
-            <JudgeScheduleStatusData id={id} status={status} onStatusChange={onStatusChange}/>
-            <JudgeScheduleNotificationData />
-        </tr>
-    )
-}
+const JudgeScheduleTableRow = ({
+  id,
+  rowNumber,
+  hour,
+  chamber,
+  caseNumber,
+  determinationCode,
+  status,
+  subscriberCount,
+  onStatusChange,
+}: JudgeScheduleTableRowProps) => {
+  return (
+    <tr className={`border-b border-gray-100 ${getBackGroundColor(status)}`}>
+      <JudgeScheduleNumberData rowNumber={rowNumber} />
+      <JudgeScheduleHourData hour={hour} />
+      <JudgeScheduleChamberData chamber={chamber} />
+      <JudgeScheduleCaseNumberData caseNumber={caseNumber} />
+      <JudgeScheduleDeterminationCodeData determinationCode={determinationCode} />
+      <JudgeScheduleStatusData
+        id={id}
+        status={status}
+        onStatusChange={onStatusChange}
+      />
+      <JudgeScheduleNotificationData subscriberCount={subscriberCount} />
+    </tr>
+  );
+};
 
-export default JudgeScheduleTableRow
+export default JudgeScheduleTableRow;

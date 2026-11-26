@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace HVBA.Backend.Models
 {
     public class CaseDto
@@ -9,5 +11,11 @@ namespace HVBA.Backend.Models
         public string CaseNumber { get; set; } = string.Empty;        // rolnummer
         public string DeterminationCode { get; set; } = string.Empty; // code van vaststelling
         public string Status { get; set; } = "Gepland";               // "Gepland", "Start binnenkort", "Bezig", "Afgehandeld"
+
+        [JsonIgnore]
+        public HashSet<string> SubscriberIds { get; set; } = new();
+
+        public int SubscriberCount => SubscriberIds.Count;
+        public bool IsSubscribed { get; set; }
     }
 }
