@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
+import { useAuth } from "react-oidc-context";
 import LawyerScheduleTableRow from "./LawyerScheduleTableRow";
-import { getCases, type CaseItem } from "../../../../api/cases";
+import { getCases, toggleCaseSubscription, type CaseItem } from "../../../../api/cases";
 import { useCaseStatusUpdates } from "../../../../hooks/useCaseStatusUpdates";
 
 interface LawyerScheduleTbodyProps {
@@ -8,17 +9,22 @@ interface LawyerScheduleTbodyProps {
 }
 
 const LawyerScheduleTbody = ({ selectedChamber }: LawyerScheduleTbodyProps) => {
+  const auth = useAuth();
+  const userId = auth.user?.profile.sub;
+  const accessToken = auth.user?.access_token;
+
   const [sessions, setSessions] = useState<CaseItem[]>([]);
   const [error, setError] = useState<string | null>(null);
-  // real time: statuswijzigingen van de judge meteen tonen
+
   useCaseStatusUpdates(setSessions);
 
   useEffect(() => {
+    if (auth.isLoading) return;
     let ignore = false;
 
     const fetchFunction = async () => {
       try {
-        const cases = await getCases();
+        const cases = await getCases(userId, accessToken);
         if (!ignore) {
           setSessions(cases);
         }
@@ -31,14 +37,34 @@ const LawyerScheduleTbody = ({ selectedChamber }: LawyerScheduleTbodyProps) => {
 
     fetchFunction();
 
-    
     return () => {
       ignore = true;
     };
-  }, []);
+  }, [auth.isLoading, userId, accessToken]);
 
-  // filteren casesKamers
-  const filtered = selectedChamber === "all" ? sessions : sessions.filter((session) => session.chamber === selectedChamber);
+  const handleToggleSubscription = async (caseId: number) => {
+    try {
+      const result = await toggleCaseSubscription(caseId, userId, accessToken);
+      setSessions((current) =>
+        current.map((session) =>
+          session.id === caseId
+            ? {
+                ...session,
+                isSubscribed: result.isSubscribed,
+                subscriberCount: result.subscriberCount,
+              }
+            : session
+        )
+      );
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Abonneren mislukt");
+    }
+  };
+
+  const filtered =
+    selectedChamber === "all"
+      ? sessions
+      : sessions.filter((session) => session.chamber === selectedChamber);
 
   if (error) {
     return (
@@ -57,11 +83,14 @@ const LawyerScheduleTbody = ({ selectedChamber }: LawyerScheduleTbodyProps) => {
       {filtered.map((session) => (
         <LawyerScheduleTableRow
           key={session.id}
+          id={session.id}
           hour={session.hour}
           chamber={session.chamber}
           caseNumber={session.caseNumber}
           determinationCode={session.determinationCode}
           status={session.status}
+          isSubscribed={session.isSubscribed}
+          onToggleSubscribe={handleToggleSubscription}
         />
       ))}
     </tbody>

@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using HVBA.Backend.Data;
 using HVBA.Backend.Models;
 using HVBA.Backend.Services;
@@ -8,6 +9,8 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace HVBA.Backend.Controllers
 {
+    public record SubscriptionRequestDto(string? UserId);
+
     [ApiController]
     [Route("api/cases")]
     //[Authorize] later terug aanzetten//
@@ -30,12 +33,76 @@ namespace HVBA.Backend.Controllers
             _hubContext = hubContext;
         }
 
-        //alle zaken, gesorteerd op uur (filteren gebeurt in de frontend)
-        [HttpGet]
-        public ActionResult<IEnumerable<CaseDto>> GetCases()
+        private string? ResolveUserId(string? fallbackUserId)
         {
-            _logger.LogInformation("Alle zaken werden opgevraagd");
-            return Ok(_dataStore.Cases.OrderBy(c => c.Hour));
+            // Werkt automatisch zodra [Authorize] aanstaat, en valt nu terug op de meegegeven Keycloak sub
+            return User.FindFirstValue(ClaimTypes.NameIdentifier)
+                ?? User.FindFirstValue("sub")
+                ?? fallbackUserId;
+        }
+
+        // Alle zaken, gesorteerd op uur + persoonlijke abonneerstatus
+        [HttpGet]
+        public ActionResult<IEnumerable<CaseDto>> GetCases([FromQuery] string? userId = null)
+        {
+            var currentUserId = ResolveUserId(userId);
+            _logger.LogInformation("Alle zaken werden opgevraagd voor gebruiker {UserId}", currentUserId ?? "anoniem");
+
+            var cases = _dataStore.Cases
+                .OrderBy(c => c.Hour)
+                .Select(c => new CaseDto
+                {
+                    Id = c.Id,
+                    Date = c.Date,
+                    Hour = c.Hour,
+                    Chamber = c.Chamber,
+                    CaseNumber = c.CaseNumber,
+                    DeterminationCode = c.DeterminationCode,
+                    Status = c.Status,
+                    SubscriberIds = c.SubscriberIds,
+                    IsSubscribed = !string.IsNullOrEmpty(currentUserId) && c.SubscriberIds.Contains(currentUserId)
+                });
+
+            return Ok(cases);
+        }
+
+        [HttpPost("{caseId:int}/subscribe")]
+        public async Task<IActionResult> ToggleSubscription(int caseId, [FromBody] SubscriptionRequestDto? request)
+        {
+            var currentUserId = ResolveUserId(request?.UserId);
+
+            if (string.IsNullOrWhiteSpace(currentUserId))
+            {
+                return BadRequest(new { message = "Gebruikers-ID (Keycloak sub) ontbreekt." });
+            }
+
+            var caseFromStore = _dataStore.Cases.FirstOrDefault(c => c.Id == caseId);
+            if (caseFromStore is null)
+            {
+                return NotFound();
+            }
+
+            bool isSubscribed;
+            if (caseFromStore.SubscriberIds.Contains(currentUserId))
+            {
+                caseFromStore.SubscriberIds.Remove(currentUserId);
+                isSubscribed = false;
+            }
+            else
+            {
+                caseFromStore.SubscriberIds.Add(currentUserId);
+                isSubscribed = true;
+            }
+
+            var subscriberCount = caseFromStore.SubscriberIds.Count;
+            _logger.LogInformation(
+                "Gebruiker {UserId} abonnement voor zaak {CaseId}: {IsSubscribed} (totaal: {Count})",
+                currentUserId, caseId, isSubscribed, subscriberCount);
+
+            // Real-time update sturen naar o.a. de Judge Portal zodat de teller direct verspringt
+            await _hubContext.Clients.All.SendAsync("CaseSubscriptionChanged", caseId, subscriberCount);
+
+            return Ok(new { isSubscribed, subscriberCount });
         }
 
         [HttpPost("import")]
@@ -59,7 +126,6 @@ namespace HVBA.Backend.Controllers
                 "CSV-import voltooid: {Total} verwerkt ({Created} nieuw, {Updated} bijgewerkt)",
                 result.TotalProcessed, result.Created, result.Updated);
 
-            // Alle verbonden portalen (judge, politie, lawyer) meteen verwittigen (real time)
             var updatedCases = _dataStore.Cases.OrderBy(c => c.Hour).ToList();
             await _hubContext.Clients.All.SendAsync("CasesUpdated", updatedCases, ct);
 
@@ -81,7 +147,6 @@ namespace HVBA.Backend.Controllers
             caseFromStore.Status = statusForUpdate.Status;
             _logger.LogInformation("Status van zaak {CaseId} gewijzigd naar {Status}", caseId, statusForUpdate.Status);
 
-            //alle verbonden portalen (judge,politie,laywer) meteen verwittigen (real time)
             await _hubContext.Clients.All.SendAsync("CaseStatusChanged", caseId, statusForUpdate.Status);
 
             return NoContent();

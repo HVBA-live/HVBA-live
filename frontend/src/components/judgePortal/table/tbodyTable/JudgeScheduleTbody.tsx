@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import JudgeScheduleTableRow from "./JudgeScheduleTableRow";
-import { getCases, updateCaseStatus ,type CaseItem } from "../../../../api/cases";
+import { getCases, updateCaseStatus, type CaseItem } from "../../../../api/cases";
 import { useCaseStatusUpdates } from "../../../../hooks/useCaseStatusUpdates";
 
 interface JudgeScheduleTbodyProps {
@@ -31,18 +31,15 @@ const JudgeScheduleTbody = ({ selectedChamber }: JudgeScheduleTbodyProps) => {
 
     fetchFunction();
 
-    
     return () => {
       ignore = true;
     };
   }, []);
 
-    //opgeroepen door de keuzelijst in JudgeScheduleStatusData 
   const handleStatusChange = async (id: number, status: string) => {
     try {
       await updateCaseStatus(id, status);
 
-      //alleen die ene zaak aanpassen in de state
       setSessions((current) =>
         current.map((session) =>
           session.id === id ? { ...session, status } : session
@@ -54,13 +51,16 @@ const JudgeScheduleTbody = ({ selectedChamber }: JudgeScheduleTbodyProps) => {
   };
 
   // Filteren Kamers
-  const filtered = selectedChamber === "all" ? sessions : sessions.filter((session) => session.chamber === selectedChamber);
+  const filtered =
+    selectedChamber === "all"
+      ? sessions
+      : sessions.filter((session) => session.chamber === selectedChamber);
 
   if (error) {
     return (
       <tbody>
         <tr>
-          <td colSpan={6} className="px-4 py-3.5 text-sm text-red-600">
+          <td colSpan={7} className="px-4 py-3.5 text-sm text-red-600">
             {error}
           </td>
         </tr>
@@ -68,20 +68,31 @@ const JudgeScheduleTbody = ({ selectedChamber }: JudgeScheduleTbodyProps) => {
     );
   }
 
+  // Volgnummer per kamer bijhouden (1, 2, ... per kamer)
+  const chamberCounters: Record<string, number> = {};
+
   return (
     <tbody className="text-sm">
-      {filtered.map((session) => (
-        <JudgeScheduleTableRow
-          key={session.id}
-          id={session.id}
-          hour={session.hour}
-          chamber={session.chamber}
-          caseNumber={session.caseNumber}
-          determinationCode={session.determinationCode}
-          status={session.status}
-          onStatusChange={handleStatusChange}
-        />
-      ))}
+      {filtered.map((session) => {
+        chamberCounters[session.chamber] =
+          (chamberCounters[session.chamber] || 0) + 1;
+        const rowNumber = chamberCounters[session.chamber];
+
+        return (
+          <JudgeScheduleTableRow
+            key={session.id}
+            id={session.id}
+            rowNumber={rowNumber}
+            hour={session.hour}
+            chamber={session.chamber}
+            caseNumber={session.caseNumber}
+            determinationCode={session.determinationCode}
+            status={session.status}
+            subscriberCount={session.subscriberCount}
+            onStatusChange={handleStatusChange}
+          />
+        );
+      })}
     </tbody>
   );
 };

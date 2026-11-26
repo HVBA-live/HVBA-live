@@ -37,13 +37,16 @@ const PoliceScheduleTbody = ({ selectedChamber }: PoliceScheduleTbodyProps) => {
   }, []);
 
   // Filteren Kamers
-  const filtered = selectedChamber === "all" ? sessions : sessions.filter((session) => session.chamber === selectedChamber);
+  const filtered =
+    selectedChamber === "all"
+      ? sessions
+      : sessions.filter((session) => session.chamber === selectedChamber);
 
   if (error) {
     return (
       <tbody>
         <tr>
-          <td colSpan={6} className="px-4 py-3.5 text-sm text-red-600">
+          <td colSpan={7} className="px-4 py-3.5 text-sm text-red-600">
             {error}
           </td>
         </tr>
@@ -51,18 +54,28 @@ const PoliceScheduleTbody = ({ selectedChamber }: PoliceScheduleTbodyProps) => {
     );
   }
 
+  // Volgnummer per kamer bijhouden (1, 2, ... per kamer)
+  const chamberCounters: Record<string, number> = {};
+
   return (
     <tbody className="text-sm">
-      {filtered.map((session) => (
-        <PoliceScheduleTableRow
-          key={session.id}
-          hour={session.hour}
-          chamber={session.chamber}
-          caseNumber={session.caseNumber}
-          determinationCode={session.determinationCode}
-          status={session.status}
-        />
-      ))}
+      {filtered.map((session) => {
+        chamberCounters[session.chamber] =
+          (chamberCounters[session.chamber] || 0) + 1;
+        const rowNumber = chamberCounters[session.chamber];
+
+        return (
+          <PoliceScheduleTableRow
+            key={session.id}
+            rowNumber={rowNumber}
+            hour={session.hour}
+            chamber={session.chamber}
+            caseNumber={session.caseNumber}
+            determinationCode={session.determinationCode}
+            status={session.status}
+          />
+        );
+      })}
     </tbody>
   );
 };

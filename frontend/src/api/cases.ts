@@ -1,8 +1,15 @@
 import type { ScheduleTableRowProps } from "../types";
 
-export interface CaseItem extends ScheduleTableRowProps{
-    id: number,
-    date: string,
+export interface CaseItem extends ScheduleTableRowProps {
+  id: number;
+  date: string;
+  subscriberCount: number;
+  isSubscribed: boolean;
+}
+
+export interface SubscriptionToggleResult {
+  isSubscribed: boolean;
+  subscriberCount: number;
 }
 
 export interface CsvImportResult {
@@ -14,20 +21,57 @@ export interface CsvImportResult {
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
-export const getCases = async (): Promise<CaseItem[]> => {
+export const getCases = async (
+  userId?: string,
+  accessToken?: string
+): Promise<CaseItem[]> => {
   try {
-    const response = await fetch(`${apiUrl}/api/cases`);
+    const query = userId ? `?userId=${encodeURIComponent(userId)}` : "";
+    const headers: HeadersInit = {};
+    if (accessToken) {
+      headers["Authorization"] = `Bearer ${accessToken}`;
+    }
 
-    // Backend antwoordt, maar met een foutcode (bv. 404 of 500)
+    const response = await fetch(`${apiUrl}/api/cases${query}`, { headers });
+
     if (!response.ok) {
       throw new Error(`Fout bij ophalen zaken: ${response.status}`);
     }
 
     return await response.json();
   } catch (error) {
-    // Ook als de backend niet bereikbaar is (niet gestart, CORS of certificaat)
     console.error("getCases mislukt:", error);
     throw new Error("Kan de zaken niet ophalen. Draait de backend?");
+  }
+};
+
+export const toggleCaseSubscription = async (
+  caseId: number,
+  userId?: string,
+  accessToken?: string
+): Promise<SubscriptionToggleResult> => {
+  try {
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+    if (accessToken) {
+      headers["Authorization"] = `Bearer ${accessToken}`;
+    }
+
+    const response = await fetch(`${apiUrl}/api/cases/${caseId}/subscribe`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ userId }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Fout bij abonneren: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("toggleCaseSubscription mislukt:", error);
+    throw new Error("Kan abonnement niet wijzigen. Draait de backend?");
   }
 };
 
@@ -35,18 +79,18 @@ export const updateCaseStatus = async (id: number, status: string): Promise<void
   try {
     const response = await fetch(`${apiUrl}/api/cases/${id}/status`, {
       method: "PATCH",
-      headers: {"Content-Type": "Application/json"},
-      body: JSON.stringify({status}),
+      headers: { "Content-Type": "Application/json" },
+      body: JSON.stringify({ status }),
     });
 
     if (!response.ok) {
       throw new Error(`Fout bij aanpassen status: ${response.status}`);
     }
-  } catch (error){
+  } catch (error) {
     console.error("updateCaseStatus mislukt", error);
     throw new Error("Kan de status niet aanpassen. Draait de backend?");
   }
-}
+};
 
 export const importCasesCsv = async (file: File): Promise<CsvImportResult> => {
   const formData = new FormData();
