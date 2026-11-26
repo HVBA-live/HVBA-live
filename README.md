@@ -119,6 +119,18 @@ De tabbladen **Importeer zaken** en **Notificatie beheer** wachten nog op de bac
 
 Het thema staat in `keycloak/themes/hvba/login/`. In de container die je met het image uit de `Dockerfile` start, zit het thema gekopieerd: na een wijziging moet je het image opnieuw bouwen.
 
+### Mailpit (lokale mails)
+
+Registreren vereist e-mailverificatie. Lokaal vangt Mailpit alle mails op, er wordt niets echt verstuurd.
+
+```bash
+docker run -d --name mailpit -p 127.0.0.1:8025:8025 -p 127.0.0.1:1025:1025 axllent/mailpit
+```
+
+Inbox: http://localhost:8025. Start Mailpit voor je je registreert, anders krijg je "Failed to send email".
+
+Bij het online zetten (Render) moeten de SMTP-instellingen in Keycloak naar een echte mailprovider wijzen.
+
 ## Backend
 
 ```bash
