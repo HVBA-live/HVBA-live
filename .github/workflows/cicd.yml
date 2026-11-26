@@ -30,8 +30,8 @@ jobs:
           context: ./frontend
           push: true
           tags: |
-            ${{ env.REGISTRY }}/frontend:latest
-            ${{ env.REGISTRY }}/frontend:${{ github.sha }}
+            ${{ secrets.REGISTRY_USERNAME }}/frontend:latest
+            ${{ secrets.REGISTRY_USERNAME }}/frontend:${{ github.sha }}
           build-args: |
             VITE_KEYCLOAK_AUTHORITY=${{ secrets.VITE_KEYCLOAK_AUTHORITY }}
             VITE_KEYCLOAK_CLIENT_ID=${{ secrets.VITE_KEYCLOAK_CLIENT_ID }}
@@ -43,8 +43,8 @@ jobs:
           context: ./Backend
           push: true
           tags: |
-            ${{ env.REGISTRY }}/backend:latest
-            ${{ env.REGISTRY }}/backend:${{ github.sha }}
+            ${{ secrets.REGISTRY_USERNAME }}/backend:latest
+            ${{ secrets.REGISTRY_USERNAME }}/backend:${{ github.sha }}
       
       - name: Inloggen op Docker Hub
         uses: docker/login-action@v3
@@ -68,7 +68,7 @@ jobs:
     steps:
       - name: Nieuwe images ophalen en containers herstarten
         run: |
-          cd C:\pad\naar\jouw\docker-compose-map
+          cd C:/hvba
           docker compose pull
           docker compose up -d
           docker image prune -f
