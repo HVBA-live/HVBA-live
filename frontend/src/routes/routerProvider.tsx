@@ -7,6 +7,7 @@ import AppLayout from "../components/layout/AppLayout";
 import AdminPortal from "../pages/adminPortal";
 import PolicePortal from "../pages/policePortal";
 import RequireAuth from "../auth/RequireAuth";
+import NotFoundPage from "../pages/not-found";
 
 const Root = () => {
   return (
@@ -67,6 +68,10 @@ const router = createBrowserRouter([
           {
             path: "profile",
             element: <Profile />,
+          },
+          {
+            path: "*",
+            element: <NotFoundPage />,
           },
         ],
       },
