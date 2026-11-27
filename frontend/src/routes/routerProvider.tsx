@@ -34,7 +34,7 @@ const router = createBrowserRouter([
         ),
         children: [
           {
-            path: "lawyer",
+            path: "user",
             element: (
               <RequireAuth allowedRoles={["gebruiker"]}>
                 <LawyerPortal />

@@ -7,7 +7,7 @@ export const homePathPerRole: Record<UserRole, string> = {
   admin: "/admin",
   justitie: "/judge",
   politie: "/police",
-  gebruiker: "/lawyer",
+  gebruiker: "/user",
 };
 
 export const getRoles = (user: User | null | undefined): UserRole[] => {
