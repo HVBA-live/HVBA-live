@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { useAuth } from "react-oidc-context";
 import { LogOut, Settings } from "lucide-react";
 import logo from "../../assets/HVBALogo.png";
+import { getMainRole } from "../../auth/roles";
 
 interface AppHeaderProps {
   title: string;
@@ -16,6 +17,8 @@ const AppHeader = ({ title }: AppHeaderProps) => {
   const firstName = auth.user?.profile.given_name ?? "";
   const lastName = auth.user?.profile.family_name ?? "";
   const email = auth.user?.profile.email ?? "";
+  const mainRole = getMainRole(auth.user);
+  const isPolice = mainRole === "politie";
 
   const goTo = (path: string) => {
     setMenuOpen(false);
@@ -60,14 +63,18 @@ const AppHeader = ({ title }: AppHeaderProps) => {
                 <p className="text-xs text-muted-foreground">{email}</p>
               </div>
               <hr className="border-border" />
-              <button
-                onClick={() => goTo("/profile")}
-                className="flex w-full items-center px-3 py-2 text-sm hover:bg-muted"
-              >
-                <Settings className="mr-2 h-4 w-4" />
-                Instellingen
-              </button>
-              <hr className="border-border" />
+              {!isPolice && (
+                <>
+                  <button
+                    onClick={() => goTo("/profile")}
+                    className="flex w-full items-center px-3 py-2 text-sm hover:bg-muted"
+                  >
+                    <Settings className="mr-2 h-4 w-4" />
+                    Instellingen
+                  </button>
+                  <hr className="border-border" />
+                </>
+              )}
               <button
                 onClick={handleLogout}
                 className="flex w-full items-center px-3 py-2 text-sm text-destructive hover:bg-muted"
