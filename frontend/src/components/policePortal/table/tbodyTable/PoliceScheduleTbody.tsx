@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import PoliceScheduleTableRow from "./PoliceScheduleTableRow";
-import { getCases, type CaseItem } from "../../../../api/cases";
+import { getCases, togglePoliceConfirmation, type CaseItem } from "../../../../api/cases";
 import { useCaseStatusUpdates } from "../../../../hooks/useCaseStatusUpdates";
 
 interface PoliceScheduleTbodyProps {
@@ -36,6 +36,21 @@ const PoliceScheduleTbody = ({ selectedChamber }: PoliceScheduleTbodyProps) => {
     };
   }, []);
 
+  const handleToggleConfirm = async (caseId: number) => {
+    try {
+      const result = await togglePoliceConfirmation(caseId);
+      setSessions((current) =>
+        current.map((session) =>
+          session.id === caseId
+            ? { ...session, isPoliceConfirmed: result.isPoliceConfirmed }
+            : session
+        )
+      );
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Bevestigen mislukt");
+    }
+  };
+
   // Filteren Kamers
   const filtered =
     selectedChamber === "all"
@@ -67,12 +82,15 @@ const PoliceScheduleTbody = ({ selectedChamber }: PoliceScheduleTbodyProps) => {
         return (
           <PoliceScheduleTableRow
             key={session.id}
+            id={session.id}
             rowNumber={rowNumber}
             hour={session.hour}
             chamber={session.chamber}
             caseNumber={session.caseNumber}
             determinationCode={session.determinationCode}
             status={session.status}
+            isConfirmed={session.isPoliceConfirmed}
+            onToggleConfirm={handleToggleConfirm}
           />
         );
       })}

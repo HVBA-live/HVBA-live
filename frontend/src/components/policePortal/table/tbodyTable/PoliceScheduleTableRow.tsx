@@ -8,7 +8,10 @@ import PoliceScheduleCaseNumberData from "./PoliceScheduleCaseNumberData";
 import type { ScheduleTableRowProps } from "../../../../types";
 
 interface PoliceScheduleTableRowProps extends ScheduleTableRowProps {
+  id: number;
   rowNumber: number;
+  isConfirmed: boolean;
+  onToggleConfirm: (id: number) => void;
 }
 
 const getBackGroundColor = (status: string) => {
@@ -19,12 +22,15 @@ const getBackGroundColor = (status: string) => {
 };
 
 const PoliceScheduleTableRow = ({
+  id,
   rowNumber,
   hour,
   chamber,
   caseNumber,
   determinationCode,
   status,
+  isConfirmed,
+  onToggleConfirm,
 }: PoliceScheduleTableRowProps) => {
   return (
     <tr className={`border-b border-gray-100 ${getBackGroundColor(status)}`}>
@@ -34,7 +40,10 @@ const PoliceScheduleTableRow = ({
       <PoliceScheduleCaseNumberData caseNumber={caseNumber} />
       <PoliceScheduleDeterminationCodeData determinationCode={determinationCode} />
       <PoliceScheduleStatusData status={status} />
-      <PoliceScheduleNotificationData />
+      <PoliceScheduleNotificationData
+        isConfirmed={isConfirmed}
+        onToggleConfirm={() => onToggleConfirm(id)}
+      />
     </tr>
   );
 };

@@ -3,7 +3,9 @@ import JudgeScheduleHourData from "./JudgeScheduleHourData";
 import JudgeScheduleChamberData from "./JudgeScheduleChamberData";
 import JudgeScheduleDeterminationCodeData from "./JudgeScheduleDeterminationCodeData";
 import JudgeScheduleStatusData from "./JudgeScheduleStatusData";
+import JudgeScheduleActionsData from "./JudgeScheduleActionsData";
 import JudgeScheduleNotificationData from "./JudgeScheduleNotificationData";
+import JudgeSchedulePoliceCheckData from "./JudgeSchedulePoliceCheckData";
 import JudgeScheduleCaseNumberData from "./JudgeScheduleCaseNumberData";
 import type { ScheduleTableRowProps } from "../../../../types";
 
@@ -11,6 +13,7 @@ interface JudgeScheduleTableRowProps extends ScheduleTableRowProps {
   id: number;
   rowNumber: number;
   subscriberCount?: number;
+  isPoliceConfirmed?: boolean;
   onStatusChange: (id: number, status: string) => void;
 }
 
@@ -30,6 +33,7 @@ const JudgeScheduleTableRow = ({
   determinationCode,
   status,
   subscriberCount,
+  isPoliceConfirmed,
   onStatusChange,
 }: JudgeScheduleTableRowProps) => {
   return (
@@ -39,12 +43,14 @@ const JudgeScheduleTableRow = ({
       <JudgeScheduleChamberData chamber={chamber} />
       <JudgeScheduleCaseNumberData caseNumber={caseNumber} />
       <JudgeScheduleDeterminationCodeData determinationCode={determinationCode} />
-      <JudgeScheduleStatusData
+      <JudgeScheduleStatusData status={status} />
+      <JudgeScheduleActionsData
         id={id}
         status={status}
         onStatusChange={onStatusChange}
       />
       <JudgeScheduleNotificationData subscriberCount={subscriberCount} />
+      <JudgeSchedulePoliceCheckData isPoliceConfirmed={isPoliceConfirmed} />
     </tr>
   );
 };
