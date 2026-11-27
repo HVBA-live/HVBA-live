@@ -151,5 +151,30 @@ namespace HVBA.Backend.Controllers
 
             return NoContent();
         }
+
+        [HttpPost("{caseId:int}/police-confirm")]
+        public async Task<IActionResult> TogglePoliceConfirmation(int caseId)
+        {
+            var caseFromStore = _dataStore.Cases.FirstOrDefault(c => c.Id == caseId);
+
+            if (caseFromStore is null)
+            {
+                return NotFound();
+            }
+
+            caseFromStore.IsPoliceConfirmed = !caseFromStore.IsPoliceConfirmed;
+
+            _logger.LogInformation(
+                "Politiebevestiging voor zaak {CaseId} gewijzigd naar {IsConfirmed}",
+                caseId, caseFromStore.IsPoliceConfirmed);
+
+            // Real-time update naar Judge Portal en Police Portal
+            await _hubContext.Clients.All.SendAsync(
+                "CasePoliceConfirmed",
+                caseId,
+                caseFromStore.IsPoliceConfirmed);
+
+            return Ok(new { isPoliceConfirmed = caseFromStore.IsPoliceConfirmed });
+        }
     }
 }

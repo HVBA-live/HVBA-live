@@ -11,6 +11,7 @@ namespace HVBA.Backend.Models
         public string CaseNumber { get; set; } = string.Empty;        // rolnummer
         public string DeterminationCode { get; set; } = string.Empty; // code van vaststelling
         public string Status { get; set; } = "Gepland";               // "Gepland", "Start binnenkort", "Bezig", "Afgehandeld"
+        public bool IsPoliceConfirmed { get; set; }
 
         [JsonIgnore]
         public HashSet<string> SubscriberIds { get; set; } = new();

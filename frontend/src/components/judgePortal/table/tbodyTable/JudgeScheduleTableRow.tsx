@@ -3,6 +3,7 @@ import JudgeScheduleHourData from "./JudgeScheduleHourData";
 import JudgeScheduleChamberData from "./JudgeScheduleChamberData";
 import JudgeScheduleDeterminationCodeData from "./JudgeScheduleDeterminationCodeData";
 import JudgeScheduleStatusData from "./JudgeScheduleStatusData";
+import JudgeScheduleActionsData from "./JudgeScheduleActionsData";
 import JudgeScheduleNotificationData from "./JudgeScheduleNotificationData";
 import JudgeScheduleCaseNumberData from "./JudgeScheduleCaseNumberData";
 import type { ScheduleTableRowProps } from "../../../../types";
@@ -39,7 +40,8 @@ const JudgeScheduleTableRow = ({
       <JudgeScheduleChamberData chamber={chamber} />
       <JudgeScheduleCaseNumberData caseNumber={caseNumber} />
       <JudgeScheduleDeterminationCodeData determinationCode={determinationCode} />
-      <JudgeScheduleStatusData
+      <JudgeScheduleStatusData status={status} />
+      <JudgeScheduleActionsData
         id={id}
         status={status}
         onStatusChange={onStatusChange}

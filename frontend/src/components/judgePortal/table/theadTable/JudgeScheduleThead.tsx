@@ -22,7 +22,9 @@ const JudgeScheduleThead = () => {
         <JudgeScheduleDeterminationCode />
         {/* Status */}
         <JudgeScheduleStatus />
-        {/* Aanwezigen / teller */}
+        {/* Actieknoppen */}
+        <th className="px-4 py-3"></th>
+        {/* Abonnees */}
         <JudgeScheduleNotification />
       </tr>
     </thead>
