@@ -5,6 +5,7 @@ using Org.BouncyCastle.Asn1.Cmp;
 using HVBA.Backend.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.Authorization;
+using HVBA.Backend.Services;
 
 namespace HVBA.Backend.Controllers
 {
@@ -50,6 +51,14 @@ namespace HVBA.Backend.Controllers
             await _hubContext.Clients.All.SendAsync("CaseStatusChanged", caseId, statusForUpdate.Status);
 
             return NoContent();
+        }
+
+           // TIJDELIJK: test of mails versturen werkt -> later verwijderen
+        [HttpPost("test-mail")]
+        public async Task<IActionResult> TestMail(string toEmail, [FromServices] IMailService mailService)
+        {
+            await mailService.SendAsync(toEmail, "Test HVBA Live", "Dit is een testmail van HVBA Live.");
+            return Ok($"Testmail verstuurd naar {toEmail}");
         }
     }
 }

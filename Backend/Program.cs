@@ -15,6 +15,7 @@ builder.Services.AddHttpClient<KeycloakPasswordResetService>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<KeycloakPasswordResetService>());
 
 builder.Services.AddSingleton<CaseDataStore>();
+builder.Services.AddTransient<IMailService, SmtpMailService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("Frontend", policy =>
@@ -89,8 +90,6 @@ app.UseCors("Frontend");
 
 //app.UseAuthentication(); // token controleren => later weer aanzetten //
 app.UseAuthorization(); // rollen
-
-app.UseAuthorization();
 
 app.MapControllers();
 
