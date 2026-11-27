@@ -5,6 +5,7 @@ export interface CaseItem extends ScheduleTableRowProps {
   date: string;
   subscriberCount: number;
   isSubscribed: boolean;
+  isPoliceConfirmed: boolean;
 }
 
 export interface SubscriptionToggleResult {
@@ -75,11 +76,30 @@ export const toggleCaseSubscription = async (
   }
 };
 
+export const togglePoliceConfirmation = async (
+  caseId: number
+): Promise<{ isPoliceConfirmed: boolean }> => {
+  try {
+    const response = await fetch(`${apiUrl}/api/cases/${caseId}/police-confirm`, {
+      method: "POST",
+    });
+
+    if (!response.ok) {
+      throw new Error(`Fout bij politiebevestiging: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("togglePoliceConfirmation mislukt:", error);
+    throw new Error("Kan bevestiging niet opslaan. Draait de backend?");
+  }
+};
+
 export const updateCaseStatus = async (id: number, status: string): Promise<void> => {
   try {
     const response = await fetch(`${apiUrl}/api/cases/${id}/status`, {
       method: "PATCH",
-      headers: { "Content-Type": "Application/json" },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status }),
     });
 

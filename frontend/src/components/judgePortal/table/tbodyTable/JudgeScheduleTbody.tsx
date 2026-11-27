@@ -60,7 +60,7 @@ const JudgeScheduleTbody = ({ selectedChamber }: JudgeScheduleTbodyProps) => {
     return (
       <tbody>
         <tr>
-          <td colSpan={7} className="px-4 py-3.5 text-sm text-red-600">
+          <td colSpan={9} className="px-4 py-3.5 text-sm text-red-600">
             {error}
           </td>
         </tr>
@@ -89,6 +89,7 @@ const JudgeScheduleTbody = ({ selectedChamber }: JudgeScheduleTbodyProps) => {
             determinationCode={session.determinationCode}
             status={session.status}
             subscriberCount={session.subscriberCount}
+            isPoliceConfirmed={session.isPoliceConfirmed}
             onStatusChange={handleStatusChange}
           />
         );

@@ -26,6 +26,8 @@ const JudgeScheduleThead = () => {
         <th className="px-4 py-3"></th>
         {/* Abonnees */}
         <JudgeScheduleNotification />
+        {/* Politiebevestiging */}
+        <th className="px-4 py-3 w-16"></th>
       </tr>
     </thead>
   );

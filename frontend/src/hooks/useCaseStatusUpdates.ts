@@ -27,6 +27,15 @@ export const useCaseStatusUpdates = (setSessions: Dispatch<SetStateAction<CaseIt
       );
     });
 
+    // Live update van de politiebevestiging (OK-knop)
+    connection.on("CasePoliceConfirmed", (id: number, isPoliceConfirmed: boolean) => {
+      setSessions((current) =>
+        current.map((session) =>
+          session.id === id ? { ...session, isPoliceConfirmed } : session
+        )
+      );
+    });
+
     // CSV-import
     connection.on("CasesUpdated", (updatedCases: CaseItem[]) => {
       setSessions(updatedCases);

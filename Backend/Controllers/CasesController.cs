@@ -35,13 +35,11 @@ namespace HVBA.Backend.Controllers
 
         private string? ResolveUserId(string? fallbackUserId)
         {
-            // Werkt automatisch zodra [Authorize] aanstaat, en valt nu terug op de meegegeven Keycloak sub
             return User.FindFirstValue(ClaimTypes.NameIdentifier)
                 ?? User.FindFirstValue("sub")
                 ?? fallbackUserId;
         }
 
-        // Alle zaken, gesorteerd op uur + persoonlijke abonneerstatus
         [HttpGet]
         public ActionResult<IEnumerable<CaseDto>> GetCases([FromQuery] string? userId = null)
         {
@@ -59,6 +57,7 @@ namespace HVBA.Backend.Controllers
                     CaseNumber = c.CaseNumber,
                     DeterminationCode = c.DeterminationCode,
                     Status = c.Status,
+                    IsPoliceConfirmed = c.IsPoliceConfirmed,
                     SubscriberIds = c.SubscriberIds,
                     IsSubscribed = !string.IsNullOrEmpty(currentUserId) && c.SubscriberIds.Contains(currentUserId)
                 });
@@ -95,14 +94,33 @@ namespace HVBA.Backend.Controllers
             }
 
             var subscriberCount = caseFromStore.SubscriberIds.Count;
-            _logger.LogInformation(
-                "Gebruiker {UserId} abonnement voor zaak {CaseId}: {IsSubscribed} (totaal: {Count})",
-                currentUserId, caseId, isSubscribed, subscriberCount);
-
-            // Real-time update sturen naar o.a. de Judge Portal zodat de teller direct verspringt
             await _hubContext.Clients.All.SendAsync("CaseSubscriptionChanged", caseId, subscriberCount);
 
             return Ok(new { isSubscribed, subscriberCount });
+        }
+
+        [HttpPost("{caseId:int}/police-confirm")]
+        public async Task<IActionResult> TogglePoliceConfirmation(int caseId)
+        {
+            var caseFromStore = _dataStore.Cases.FirstOrDefault(c => c.Id == caseId);
+
+            if (caseFromStore is null)
+            {
+                return NotFound();
+            }
+
+            caseFromStore.IsPoliceConfirmed = !caseFromStore.IsPoliceConfirmed;
+
+            _logger.LogInformation(
+                "Politiebevestiging voor zaak {CaseId} gewijzigd naar {IsConfirmed}",
+                caseId, caseFromStore.IsPoliceConfirmed);
+
+            await _hubContext.Clients.All.SendAsync(
+                "CasePoliceConfirmed",
+                caseId,
+                caseFromStore.IsPoliceConfirmed);
+
+            return Ok(new { isPoliceConfirmed = caseFromStore.IsPoliceConfirmed });
         }
 
         [HttpPost("import")]
@@ -122,10 +140,6 @@ namespace HVBA.Backend.Controllers
             await using var stream = file.OpenReadStream();
             var result = await _csvImportService.ImportCsvAsync(stream, ct);
 
-            _logger.LogInformation(
-                "CSV-import voltooid: {Total} verwerkt ({Created} nieuw, {Updated} bijgewerkt)",
-                result.TotalProcessed, result.Created, result.Updated);
-
             var updatedCases = _dataStore.Cases.OrderBy(c => c.Hour).ToList();
             await _hubContext.Clients.All.SendAsync("CasesUpdated", updatedCases, ct);
 
@@ -140,41 +154,13 @@ namespace HVBA.Backend.Controllers
 
             if (caseFromStore is null)
             {
-                _logger.LogWarning("Zaak {CaseId} werd niet gevonden", caseId);
                 return NotFound();
             }
 
             caseFromStore.Status = statusForUpdate.Status;
-            _logger.LogInformation("Status van zaak {CaseId} gewijzigd naar {Status}", caseId, statusForUpdate.Status);
-
             await _hubContext.Clients.All.SendAsync("CaseStatusChanged", caseId, statusForUpdate.Status);
 
             return NoContent();
-        }
-
-        [HttpPost("{caseId:int}/police-confirm")]
-        public async Task<IActionResult> TogglePoliceConfirmation(int caseId)
-        {
-            var caseFromStore = _dataStore.Cases.FirstOrDefault(c => c.Id == caseId);
-
-            if (caseFromStore is null)
-            {
-                return NotFound();
-            }
-
-            caseFromStore.IsPoliceConfirmed = !caseFromStore.IsPoliceConfirmed;
-
-            _logger.LogInformation(
-                "Politiebevestiging voor zaak {CaseId} gewijzigd naar {IsConfirmed}",
-                caseId, caseFromStore.IsPoliceConfirmed);
-
-            // Real-time update naar Judge Portal en Police Portal
-            await _hubContext.Clients.All.SendAsync(
-                "CasePoliceConfirmed",
-                caseId,
-                caseFromStore.IsPoliceConfirmed);
-
-            return Ok(new { isPoliceConfirmed = caseFromStore.IsPoliceConfirmed });
         }
     }
 }
